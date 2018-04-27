@@ -24,19 +24,22 @@ textarea {
     max-width: 280px;
 }
 
+.container{
+    width: 1500px !important;
+}
 
 
 
 #reportContainer {
-    height: 600px;
+    height: 990px;
     width: 100%;
-    max-width: 1000px;
+    max-width: 1500px;
 }
 
 #dashboardContainer {
-    height: 920px;
+    height: 990px;
     width: 100%;
-    max-width: 1320px;
+    max-width: 1500px;
 }
 
     #dashboardContainer iframe {

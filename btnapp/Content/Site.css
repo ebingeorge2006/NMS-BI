@@ -1,0 +1,94 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    font-family: 'Segoe UI Web Light', 'Segoe UI Light', 'Segoe WP Light', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+
+
+
+#reportContainer {
+    height: 600px;
+    width: 100%;
+    max-width: 1000px;
+}
+
+#dashboardContainer {
+    height: 920px;
+    width: 100%;
+    max-width: 1320px;
+}
+
+    #dashboardContainer iframe {
+        border: none;
+    }
+
+#buttonsWrapper {
+    width: 100%;
+    text-align: center;
+    padding-top: 50px;
+}
+
+a:hover, a:visited, a:link, a:active {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#buttonsWrapper a {
+    background-color: rgb(36, 169, 225);
+    border: none;
+    color: white;
+    padding: 5px 30px;
+    margin: 5px;
+    width: 200px;
+    height: 30px;
+    display: inline-block;
+    text-align: center;
+}
+
+    #buttonsWrapper a:hover {
+        font-size: 120%;
+    }
+
+#tileContainer {
+    width: 400px;
+    height: 350px;
+}
+
+.infoBox {
+    margin-top: 30px;
+}
+
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: .25rem 1.5rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+}

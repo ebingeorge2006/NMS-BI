@@ -1,0 +1,826 @@
+﻿@model btnapp.Models.EmbedConfig
+@{
+    ViewBag.Title = "Power Bi Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles{
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+    <link href="~/Content/alertifyjs/alertify.min.css" rel="stylesheet" />
+    <link href="~/Content/awesome-bootstrap-checkbox.css" rel="stylesheet" />
+    <style>
+
+
+        .ajs-message.ajs-success.ajs-visible {
+            width: 446px !important;
+        }
+
+        .alertify-notifier.ajs-right .ajs-message.ajs-visible {
+            right: 466px !important;
+        }
+
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td {
+            min-width: 120px;
+            max-width: 200px;
+        }
+
+        th {
+            height: 100px;
+            min-width: 120px;
+            max-width: 200px;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+
+        /* The switch - the box around the slider */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 42px;
+            height: 21px;
+        }
+
+            /* Hide default HTML checkbox */
+            .switch input {
+                display: none;
+            }
+
+        /* The slider */
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 13px;
+                width: 13px;
+                left: 4px;
+                bottom: 4px;
+                background-color: white;
+                -webkit-transition: .4s;
+                transition: .4s;
+            }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(20px);
+            -ms-transform: translateX(20px);
+            transform: translateX(20px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
+
+            .slider.round:before {
+                border-radius: 50%;
+            }
+    </style>
+}
+
+
+<!-- Google Analytics -->
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-118127007-1', 'auto');
+    ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
+<script src="https://npmcdn.com/es6-promise@3.2.1"></script>
+<script src="~/scripts/powerbi.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.0/underscore-min.js"></script>
+<script type="text/javascript" src="~/Scripts/jspdf.debug.js"></script>
+<script type="text/javascript" src="~/Scripts/jspdf.plugin.autotable.js"></script>
+<script type="text/javascript" src="~/Scripts/alertify.min.js"></script>
+<script type="text/javascript" src="~/Scripts/backbone-min.js"></script>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div id="errorWrapper">
+        <h2>
+            Error
+        </h2>
+        <pre>
+            @Model.ErrorMessage
+        </pre>
+    </div>
+
+    return;
+}
+
+<div class="container">
+    <div class="jumbotron">
+        <div>
+            <div style="float:left; padding-right: 10px; ">
+                <div class="checkbox checkbox-info">
+                    <input type="radio" name="rdFileType" id="rdPDF" value="PDF" checked onchange="UpdateExportButtonText('PDF')">
+                    <label for="rdPDF">
+                        <i class="far fa-file-pdf"></i> PDF
+                    </label>
+                </div>
+                <div class="checkbox checkbox-info">
+                    <input type="radio" name="rdFileType" id="rdCSV" value="CSV" onchange="UpdateExportButtonText('CSV')">
+                    <label for="rdCSV">
+                        <i class="far fa-file-excel"></i> CSV
+                    </label>
+                </div>
+            </div>
+
+            <div style="float:left;margin-top: 20px;">
+                <button id="export_pdf" type="button" class="btn btn-primary" disabled> Export to PDF </button>
+                <button id="print_report" type="button" class="btn btn-info" disabled> Print Report </button>
+            </div>
+
+            <!-- Rounded switch -->
+            <div style="float:left; margin-top: 14px; margin-left: 6px;">
+                <i class="fas fa-toggle-on"></i><span>&nbsp; Show/Hide Notifications</span><br />
+                <label class="switch">
+                    <input type="checkbox" id="toggleNotifications">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="dropdown selectReport" style="float:left; margin-left: 6px; margin-top: 10px;">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Summary
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="#" data-page-name="ReportSection9a26698070db0c678c17">Summary</a>
+                    <a class="dropdown-item" href="#" data-page-name="ReportSection8ace1946126730501097">Hotel Details</a>
+                    <a class="dropdown-item" href="#" data-page-name="ReportSectionf9122c9f0517cd8707c4">Car Details</a>
+                    <a class="dropdown-item" href="#" data-page-name="ReportSection4af9717a16b38e3a54ba">Meal Details</a>
+                </div>
+            </div>
+        </div>
+
+        
+        <br />
+        <br />
+
+        <hr style="margin-top:40px;" />
+
+        <div id="reportContainer"></div>
+
+    </div>
+</div>
+
+<div class="container">
+    <div id="dvExportedData"></div>
+</div>
+
+<script>
+    alertify.defaults.notifier.delay = 15;
+
+
+    var reportsAndVisuals = [
+        { reportName: 'ReportSection9a26698070db0c678c17', reportAlias: 'Summary', visualName: 'e6f0a25e81434bac3d0b' },
+        { reportName: 'ReportSection8ace1946126730501097', reportAlias: 'Hotel Details', visualName: '662140001cd759073b0d' },
+        { reportName: 'ReportSectionf9122c9f0517cd8707c4', reportAlias: 'Car Details', visualName: '51fb1a2e89534d957310' },
+        { reportName: 'ReportSection4af9717a16b38e3a54ba', reportAlias: 'Meal Details', visualName: '5f3cd1ebcca6071a08d0' }
+    ];
+
+    window['exportedDataTable'] = '';
+    var cache_width, a4;
+
+    // Read embed application token from Model
+    var accessToken = "@Model.EmbedToken.Token";
+
+    // Read embed URL from Model
+    var embedUrl = "@Html.Raw(Model.EmbedUrl)";
+
+    // Read report Id from Model
+    var embedReportId = "@Model.Id";
+
+    // Get models. models contains enums that can be used.
+    var models = window['powerbi-client'].models;
+
+    // Embed configuration used to describe the what and how to embed.
+    // This object is used when calling powerbi.embed.
+    // This also includes settings and options such as filters.
+    // You can find more information at https://github.com/Microsoft/PowerBI-JavaScript/wiki/Embed-Configuration-Details.
+    var config = {
+        type: 'report',
+        tokenType: models.TokenType.Embed,
+        accessToken: accessToken,
+        embedUrl: embedUrl,
+        id: embedReportId,
+        permissions: models.Permissions.All,
+        settings: {
+            filterPaneEnabled: false,
+            navContentPaneEnabled: false
+
+        }
+    };
+
+    // Get a reference to the embedded report HTML element
+    var reportContainer = $('#reportContainer')[0];
+
+    if ("@Model.Username" != "") {
+        $("#RLS").prop('checked', true);
+        $("#RLSdiv").show();
+    }
+    else
+    {
+        $("#RLS").prop('checked', false);
+        $("#RLSdiv").hide();
+    }
+
+    if ("@Model.IsEffectiveIdentityRequired.GetValueOrDefault()" == "True") {
+        $("#noRLSdiv").hide();
+        $("#RLS").removeAttr("disabled");
+        $("#RLS").change(function () {
+            if ($(this).is(":checked")) {
+                $("#RLSdiv").show(300);
+            } else {
+                $("#RLSdiv").hide(200);
+            }
+        });
+    }
+    else
+    {
+        $("#noRLSdiv").show();
+    }
+    // Embed the report and display it within the div container.
+    var report = powerbi.embed(reportContainer, config);
+
+    // Report.off removes a given event handler if it exists.
+    report.off("loaded");
+    report.off("pageChanged");
+    report.off("rendered");
+    report.off("tileClicked");
+    report.off("dataSelected");
+
+
+
+
+    console.log('loading..');
+    // Report.on will add an event handler which prints to Log window.
+    report.on("loaded", function () {
+        //alertify.warning('Report Loaded..');
+    });
+
+    // Report.on will add an event listener.
+    report.on("pageChanged", function (event) {
+
+        var page = event.detail.newPage;
+
+        ga('send', {
+            hitType: 'event',
+            eventCategory: 'Report',
+            eventAction: 'Report Viewed',
+            eventLabel: page.displayName,
+            fieldsObject: {
+                DisplayName: page.displayName,
+                name: page.name
+            }
+        });
+
+
+        var obj = {
+            hitType: 'event',
+            eventCategory: 'Report',
+            eventAction: 'Report Viewed',
+            eventLabel: page.displayName
+        }
+
+        if ($('#toggleNotifications').is(":checked")) {
+            alertify.success((library.json.prettyPrint(obj)));
+        }
+        
+
+        /*
+        page.getVisuals().then(function (pageVisuals) {
+
+        });
+        */
+
+    });
+
+
+    // Report.on will add an event listener.
+    report.on("rendered", function (event) {
+        var data = event.detail;
+
+        document.getElementById("export_pdf").disabled = false;
+        document.getElementById("export_pdf").addEventListener("click", Export_Data);
+
+        document.getElementById("print_report").disabled = false;
+        document.getElementById("print_report").addEventListener("click", Print_Report);
+    });
+
+
+    // Report.on will add an event listener.
+    report.on("dataSelected", function (event) {
+
+
+        var eventDetail  = event.detail;
+        if (eventDetail.dataPoints.length > 0) {
+
+            
+            for (var i = 0; i < eventDetail.dataPoints.length; i++)
+            {
+                ga('send', {
+                    hitType: 'event',
+                    eventCategory: eventDetail.page.displayName + ' : Data Filter',
+                    eventAction: eventDetail.visual.title,
+                    eventLabel: eventDetail.dataPoints[i].identity[0].equals
+                });
+            }
+
+            //ga('send', {
+            //    hitType: 'event',
+            //    eventCategory: eventDetail.page.displayName + ' : Data Filter',
+            //    eventAction: eventDetail.visual.title,
+            //    eventLabel: eventDetail.dataPoints[eventDetail.dataPoints.length - 1].identity[0].equals,
+            //    fieldsObject: {
+            //        dataPoints: eventDetail.dataPoints,
+            //        page: eventDetail.page,
+            //        report: eventDetail.report,
+            //        visual: eventDetail.visual
+            //    }
+            //});
+
+            for (var i = 0; i < eventDetail.dataPoints.length; i++) {
+                var obj = {
+                    hitType: 'event',
+                    eventCategory: eventDetail.page.displayName + ' : Data Filter',
+                    eventAction: eventDetail.visual.title,
+                    eventLabel: eventDetail.dataPoints[i].identity[0].equals
+                }
+
+                if ($('#toggleNotifications').is(":checked")) {
+                    alertify.success((library.json.prettyPrint(obj)));
+                }
+            }
+
+            //var obj = {
+            //    hitType: 'event',
+            //    eventCategory: eventDetail.page.displayName + ' : Data Filter',
+            //    eventAction: eventDetail.visual.title,
+            //    eventLabel: eventDetail.dataPoints[eventDetail.dataPoints.length - 1].identity[0].equals,
+            //    fieldsObject: {
+            //        dataPoints: eventDetail.dataPoints,
+            //        page: eventDetail.page,
+            //        report: eventDetail.report,
+            //        visual: eventDetail.visual
+            //    }
+            //}
+
+            //if ($('#toggleNotifications').is(":checked")) {
+            //    alertify.success((library.json.prettyPrint(obj)));
+            //}
+
+
+            
+        }
+
+
+    });
+
+
+    report.on("error", function (event) {
+        report.off("error");
+    });
+
+
+
+
+
+    function Export_Data() {
+
+        console.log('exporting data...');
+        // Get models. models contains enums that can be used.
+        var models = window['powerbi-client'].models;
+
+        // Get a reference to the embedded report HTML element
+        var embedContainer = $('#reportContainer')[0];
+
+        // Get a reference to the embedded report.
+        report = powerbi.get(embedContainer);
+
+        // Retrieve the page collection and get the visuals for the first page.
+        report.getPages()
+            .then(function (pages) {
+
+                // Retrieve active page.
+                var activePage = pages.find(function (page) {
+                    return page.isActive
+                });
+
+                var reportVisual = _.find(reportsAndVisuals, function (rv) {
+                    return rv.reportName == activePage.name;
+                });
+
+                var reportName = reportVisual.visualName;
+                var pageName = activePage.name;
+
+                activePage.getVisuals()
+                    .then(function (visuals) {
+
+                        // Retrieve the wanted visual.
+                        var visual = visuals.find(function (visual) {
+                            return visual.name == reportName;
+                        });
+
+                        // Exports visual data
+                        visual.exportData(models.ExportDataType.Summarized)
+                            .then(function (data) {
+
+                                var newLineChar = /\n/;
+                                var headAndData = data.data.split(newLineChar);
+
+                               // var columnNameString = data.data.substr(0, data.data.search(newLineChar));
+                                /* Get Column Names */
+                                var ColumNames = headAndData[0].splitComma();
+
+                                /**
+                                var exportedData = document.createElement('TABLE');
+                                exportedData.setAttribute('id', 'exportedData');
+                                document.getElementById('dvExportedData').innerHTML = exportedData.outerHTML;
+                                var table = document.getElementById("exportedData");
+
+                                var row = table.insertRow(-1);
+                                for (var i = 0; i < ColumNames.length; i++) {
+                                    var headerCell = document.createElement("TH");
+                                    headerCell.innerHTML = "<b>" + ColumNames[i] + "</b>";
+                                    row.appendChild(headerCell);
+                                }
+
+                                for (var i = 1; i < headAndData.length - 1; i++) {
+                                    row = table.insertRow(-1);
+                                    var DataValue = headAndData[i].splitComma();
+                                    for (var j = 0; j < DataValue.length; j++) {
+                                        var cell = row.insertCell(-1);
+                                        cell.innerHTML = DataValue[j];
+                                    }
+                                }
+                               */
+
+                                var rows = headAndData.slice(1);
+                                var dataRows = _.map(rows, function (val) { return val.splitComma(); });
+                                var selectedFileType = $('input[name=rdFileType]:checked').val();
+
+                                ga('send', {
+                                    hitType: 'event',
+                                    eventCategory: 'Export',
+                                    eventAction: 'ExportTo' + selectedFileType,
+                                    eventLabel: reportName,
+                                    fieldsObject: {
+                                        PageName: pageName,
+                                        ReportName: reportName
+                                    }
+                                });
+
+                                var obj = {
+                                    hitType: 'event',
+                                    eventCategory: 'Export',
+                                    eventAction: 'ExportTo' + selectedFileType,
+                                    eventLabel: reportName
+                                    /*,fieldsObject: {
+                                        PageName: pageName,
+                                        ReportName: reportName
+                                    }*/
+                                }
+
+                                if ($('#toggleNotifications').is(":checked")) {
+                                    alertify.success((library.json.prettyPrint(obj)));
+                                }
+                                
+
+                                switch (selectedFileType) {
+
+                                    case "PDF":
+                                        exportPDF(ColumNames, dataRows, 'report.pdf');
+                                        break;
+
+                                    case "CSV":
+                                        exportTableToCSVColsRows(ColumNames, dataRows, 'report.csv');
+                                        break;
+
+                                    default:
+                                        exportPDF(ColumNames, dataRows, 'report.pdf');
+                                        break;
+                                }
+
+
+                            })
+                            .catch(function (errors) {
+                                alertify.error(errors.message);
+                            });
+                    })
+                    .catch(function (errors) {
+                        alertify.error(errors.message);
+                    });
+            })
+            .catch(function (errors) {
+                alertify.error(errors.message);
+            });
+    }
+
+    function Print_Report() {
+
+        // Get a reference to the embedded report HTML element
+        var embedContainer = $('#reportContainer')[0];
+
+        // Get a reference to the embedded report.
+        report = powerbi.get(embedContainer);
+
+
+        // Retrieve the page collection and get the visuals for the first page.
+        report.getPages()
+            .then(function (pages) {
+
+                // Retrieve active page.
+                var activePage = pages.find(function (page) {
+                    return page.isActive
+                });
+
+                var reportVisual = _.find(reportsAndVisuals, function (rv) {
+                    return rv.reportName == activePage.name;
+                });
+
+                var reportName = reportVisual.visualName;
+                var pageName = activePage.name;
+
+                ga('send', {
+                    hitType: 'event',
+                    eventCategory: 'Print',
+                    eventAction: 'Print Report',
+                    eventLabel: reportName,
+                    fieldsObject: {
+                        PageName: pageName,
+                        ReportName: reportName
+                    }
+                });
+
+                var obj = {
+                    hitType: 'event',
+                    eventCategory: 'Print',
+                    eventAction: 'Print Report',
+                    eventLabel: reportName,
+                    fieldsObject: {
+                        PageName: pageName,
+                        ReportName: reportName
+                    }
+                }
+                if ($('#toggleNotifications').is(":checked")) {
+                    alertify.success((library.json.prettyPrint(obj)));
+                }
+
+            })
+            .catch(function (errors) {
+                alertify.error(errors.message);
+            });
+
+        // Trigger the print dialog for your browser.
+        report.print()
+            .catch(function (errors) {
+                alertify.error(errors.message);
+            });
+    }
+
+    function Set_Page(pageName) {
+        // Get a reference to the embedded report HTML element
+        var embedContainer = $('#reportContainer')[0];
+
+        // Get a reference to the embedded report.
+        report = powerbi.get(embedContainer);
+
+        // Retrieve the page collection, and then set the second page to be active.
+        report.getPages()
+            .then(function (pages) {
+
+                var selectedPage = _.find(pages, function (data) { return data.name == pageName; });
+
+                selectedPage.setActive()
+                    .catch(function (errors) {
+                        Log.log(errors);
+                    });
+            })
+            .catch(function (errors) {
+                Log.log(errors);
+            });
+    }
+</script>
+
+
+<script>
+
+
+    exportPDF = function (columns, rows, reportName) {
+        var pdfsize = 'a4';
+
+        var doc = new jsPDF('p', 'pt', pdfsize);
+
+        var totalPagesExp = "{total_pages_count_string}";
+        var base64Img = getBase64OfHeaderImage();
+
+        var pageContent = function (data) {
+            // HEADER
+            doc.setFontSize(20);
+            doc.setTextColor(40);
+            doc.setFontStyle('normal');
+            if (base64Img) {
+                doc.addImage(base64Img, 'JPEG', data.settings.margin.left, 15, 300, 100);
+            }
+            //doc.text("Report", data.settings.margin.left + 15, 22);
+
+            // FOOTER
+            var str = "Page " + data.pageCount;
+            // Total page number plugin only available in jspdf v1.0+
+            if (typeof doc.putTotalPages === 'function') {
+                str = str + " of " + totalPagesExp;
+            }
+            doc.setFontSize(10);
+            doc.text(str, data.settings.margin.left, doc.internal.pageSize.height - 10);
+        };
+
+
+        //'striped', 'grid' or 'plain'
+        doc.autoTable(columns, rows, {
+            theme: 'striped',
+            styles: {
+                fontSize: 8,
+                valign: 'top',
+                overflow: 'linebreak',
+                columnWidth: 'auto',
+                cellPadding: 5
+            },
+            columnStyles: {
+                1: { columnWidth: 'auto' }
+            },
+            margin: { top: 115 },
+            addPageContent: pageContent
+        });
+
+        // Total page number plugin only available in jspdf v1.0+
+        if (typeof doc.putTotalPages === 'function') {
+            doc.putTotalPages(totalPagesExp);
+        }
+
+        doc.save(reportName);
+    };
+
+
+
+    String.prototype.splitComma = function () {
+        return this.split(',').reduce((accum, curr) => {
+            if (accum.isConcatting) {
+                accum.soFar[accum.soFar.length - 1] += ',' + curr
+            } else {
+                accum.soFar.push(curr)
+            }
+            if (curr.split('"').length % 2 == 0) {
+                accum.isConcatting = !accum.isConcatting
+            }
+            return accum;
+        }, { soFar: [], isConcatting: false }).soFar
+    };
+
+
+
+
+</script>
+
+<script>
+
+    function downloadCSV(csv, filename) {
+        var csvFile;
+        var downloadLink;
+
+        // CSV file
+        csvFile = new Blob([csv], { type: "text/csv" });
+
+        // Download link
+        downloadLink = document.createElement("a");
+
+        // File name
+        downloadLink.download = filename;
+
+        // Create a link to the file
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+
+        // Hide download link
+        downloadLink.style.display = "none";
+
+        // Add the link to DOM
+        document.body.appendChild(downloadLink);
+
+        // Click download link
+        downloadLink.click();
+    }
+
+    function exportTableToCSV(filename) {
+        var csv = [];
+        var rows = document.querySelectorAll("#exportedData tr");
+
+        for (var i = 0; i < rows.length; i++) {
+            var row = [], cols = rows[i].querySelectorAll("td, th");
+
+            for (var j = 0; j < cols.length; j++)
+                row.push(cols[j].innerText);
+
+            csv.push(row.join(","));
+        }
+
+        // Download CSV file
+        downloadCSV(csv.join("\n"), filename);
+    }
+
+    function exportTableToCSVColsRows(columns, rows, filename) {
+        var csv = [];
+        csv.push(columns.join(','));
+        for (var i = 0; i < rows.length; i++) {
+            csv.push(rows[i].join(','));
+        }
+        // Download CSV file
+        downloadCSV(csv.join("\n"), filename);
+    }
+</script>
+
+<script>
+
+    $(document).ready(function () {
+        $(".dropdown-menu a").click(function () {
+            var selText = $(this).text();
+            var reportName = $(this).attr('data-page-name');
+            $('.selectReport').find('.dropdown-toggle').html(selText + ' <span class="caret"></span>');
+
+            Set_Page(reportName);
+        });
+    });
+
+
+
+
+    if (!library)
+        var library = {};
+
+    library.json = {
+        replacer: function (match, pIndent, pKey, pVal, pEnd) {
+            var key = '<span class=json-key><b>';
+            var val = '<span class=json-value><b>';
+            var str = '<span class=json-string><b>';
+            var r = pIndent || '';
+            if (pKey)
+                r = r + key + pKey.replace(/[": ]/g, '') + '</b></span>: ';
+            if (pVal)
+                r = r + (pVal[0] == '"' ? str : val) + pVal + '</span><br />';
+            return r + (pEnd || '');
+        },
+        prettyPrint: function (obj) {
+            var jsonLine = /^( *)("[\w]+": )?("[^"]*"|[\w.+-]*)?([,[{])?$/mg;
+            return JSON.stringify(obj, null, 3)
+                .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
+                .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(jsonLine, library.json.replacer);
+        }
+    };
+
+    function UpdateExportButtonText(fileType) {
+        $("#export_pdf").html('Export to ' + fileType);
+    }
+
+    function getBase64OfHeaderImage() {
+        return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAACVCAYAAACuCQjBAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA4ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1ZTM2NjRkMy1mZGE0LTRlZjYtODc1ZS1jYzI0MTgxODlkZjIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NjA1QTVGNjZBQ0JEMTFFNUI4NkU4NTM0MzQyMEZGRTAiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NjA1QTVGNjVBQ0JEMTFFNUI4NkU4NTM0MzQyMEZGRTAiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo3OTNmMWM0My01ZjdjLTRjMzMtOTJhYy03YzE3NDIxMDkwMTIiIHN0UmVmOmRvY3VtZW50SUQ9ImFkb2JlOmRvY2lkOnBob3Rvc2hvcDo2NWM1OTllZC1mNTI3LTExNzgtOGU0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";
+    }
+</script>

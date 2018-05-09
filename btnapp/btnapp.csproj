@@ -66,6 +66,9 @@
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Select.HtmlToPdf, Version=18.1.0.0, Culture=neutral, PublicKeyToken=e0ae9f6e27a97018, processorArchitecture=MSIL">
+      <HintPath>..\packages\Select.HtmlToPdf.18.1.0\lib\net40\Select.HtmlToPdf.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -234,6 +237,7 @@
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\split_text_to_size.js" />
     <Content Include="Scripts\standard_fonts_metrics.js" />
+    <Content Include="Views\Home\HtmlPage1.html" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -252,6 +256,8 @@
     <Content Include="Views\Home\Report.cshtml" />
     <Content Include="Views\Home\reportbackup.cshtml" />
     <Content Include="Views\Home\reportbackup2.cshtml" />
+    <Content Include="Views\Home\Report - Copy.cshtml" />
+    <Content Include="Views\Home\BeforeToday_May.tml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

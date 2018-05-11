@@ -375,7 +375,7 @@ exportPDFTable = function (columns, rows, reportName) {
     }
 
     $('#hdnHtmlCode').val($('#dvExportedData').html());
-    document.getElementById('BtnConvert').click();
+    document.getElementById('CreatePDFDocument').click();
 
 }
 
@@ -679,7 +679,7 @@ exportPDFPivoted = function (columns, rows, reportName) {
     }
 
     $('#hdnHtmlCode').val($('#dvExportedData').html());
-    document.getElementById('BtnConvert').click();
+    document.getElementById('CreatePDFDocument').click();
 
 
 }

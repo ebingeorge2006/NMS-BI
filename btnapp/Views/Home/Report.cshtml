@@ -46,6 +46,14 @@
 <div class="headerBI" style="height:50px; padding-top: 10px;">
     <ul class="action-items">
         <li>
+            <div style="display:none;">
+                @using (Html.BeginForm("ConvertHtmlCodeToPdf", "Home", FormMethod.Post))
+                {
+                    <input type="hidden" id="hdnHtmlCode" name="hdnHtmlCode" />
+                    <input type="submit" id="CreatePDFDocument" value="Export To PDF Hidden" />
+                    <div id="dvExportedData"></div>
+                }
+            </div>
             <button id="export_pdf" type="button" class="btn btn-primary" disabled> Export to PDF </button>
         </li>
         <li>
@@ -55,15 +63,6 @@
 </div>
 <hr style="margin-top:10px;" />
 <div id="reportContainer" style="height:1024px;"></div>
-<div style="display:none;">
-    @using (Html.BeginForm("ConvertHtmlCodeToPdf", "Home", FormMethod.Post))
-    {
-        <input type="hidden" id="hdnHtmlCode" name="hdnHtmlCode" />
-        <div id="dvExportedData">
-        </div>
-        <input type="submit" id="BtnConvert" value="Create PDF" />
-    }
-</div>
 
 <script>
 
@@ -237,7 +236,7 @@
     report.on("error", function (event) {
         report.off("error");
     });
-    
+
 
 </script>
 

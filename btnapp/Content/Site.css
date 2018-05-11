@@ -1,6 +1,5 @@
 ﻿body {
-    padding-top: 50px;
-    padding-bottom: 20px;
+   
     font-family: 'Segoe UI Web Light', 'Segoe UI Light', 'Segoe WP Light', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif
 }
 
@@ -28,13 +27,32 @@ textarea {
     width: 1500px !important;
 }
 
-
-
-#reportContainer {
-    height: 990px;
-    width: 100%;
-    max-width: 1500px;
+.action-items {
+    display: table;
+    color: #fff;
+    margin: auto;
+    padding: 0px;
 }
+.action-items li{
+    display: table-cell;
+    padding: 0 5px;
+    vertical-align: middle;
+}
+.action-items li:last-child {
+    padding-left: 10px;
+}
+.headerBI {
+    
+     background-color: #16375a;
+    border-color: #16375a;
+}
+.btn {
+    padding: 3px 12px;
+}
+/*#reportContainer {
+    max-width: 1280px;
+    margin: auto;
+}*/
 
 #dashboardContainer {
     height: 990px;

@@ -170,7 +170,7 @@ namespace btnapp.Controllers
 
 
             // create a new pdf document converting an url
-            PdfDocument doc = converter.ConvertHtmlString(collection["TxtHtmlCode"]);
+            PdfDocument doc = converter.ConvertHtmlString(collection["hdnHtmlCode"]);
             // save pdf document
             byte[] pdf = doc.Save();
             // close pdf document

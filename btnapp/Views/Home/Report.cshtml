@@ -12,7 +12,6 @@
     <link rel="stylesheet" type="text/css" href="https://pivottable.js.org/dist/pivot.css">
     <style>
 
-
         .ajs-message.ajs-success.ajs-visible {
             width: 446px !important;
         }
@@ -131,10 +130,7 @@
 <script src="~/scripts/powerbi.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.0/underscore-min.js"></script>
 <script type="text/javascript" src="~/Scripts/jspdf.debug.js"></script>
-<script type="text/javascript" src="~/Scripts/jspdf.plugin.autotable.js"></script>
 <script type="text/javascript" src="~/Scripts/alertify.min.js"></script>
-<script type="text/javascript" src="~/Scripts/backbone-min.js"></script>
-<script type="text/javascript" src="https://pivottable.js.org/dist/pivot.js"></script>
 
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
@@ -150,76 +146,31 @@
     return;
 }
 
-<div class="container" style="width: 1540px;">
-    <div>
-        <div>
-            <div style="float:left; padding-right: 10px; ">
-                <div class="checkbox checkbox-info">
-                    <input type="radio" name="rdFileType" id="rdPDF" value="PDF" checked onchange="UpdateExportButtonText('PDF')">
-                    <label for="rdPDF">
-                        <i class="far fa-file-pdf"></i> PDF
-                    </label>
-                </div>
-                <div class="checkbox checkbox-info">
-                    <input type="radio" name="rdFileType" id="rdCSV" value="CSV" onchange="UpdateExportButtonText('CSV')">
-                    <label for="rdCSV">
-                        <i class="far fa-file-excel"></i> CSV
-                    </label>
-                </div>
-            </div>
-
-            <div style="float:left;margin-top: 20px;">
-                <button id="export_pdf" type="button" class="btn btn-primary" disabled> Export to PDF </button>
-                <button id="print_report" type="button" class="btn btn-info" disabled> Print Report </button>
-            </div>
-
-            <!-- Rounded switch -->
-            <div style="float:left; margin-top: 14px; margin-left: 6px;">
-                <i class="fas fa-toggle-on"></i><span>&nbsp; Show/Hide Notifications</span><br />
-                <label class="switch">
-                    <input type="checkbox" id="toggleNotifications">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            <div class="dropdown selectReport" style="float:left; margin-left: 6px; margin-top: 10px;">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Summary
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#" data-page-name="ReportSection9a26698070db0c678c17">Summary</a>
-                    <a class="dropdown-item" href="#" data-page-name="ReportSection8ace1946126730501097">Hotel Details</a>
-                    <a class="dropdown-item" href="#" data-page-name="ReportSectionf9122c9f0517cd8707c4">Car Details</a>
-                    <a class="dropdown-item" href="#" data-page-name="ReportSection4af9717a16b38e3a54ba">Meal Details</a>
-                </div>
-            </div>
-        </div>
-
-
-        <br />
-        <br />
-
-        <hr style="margin-top:40px;" />
-        <div id="reportContainer"></div>
-        <div id="output" style="margin: 30px;"></div>
-
-    </div>
+<div class="headerBI" style="height:50px; padding-top: 10px;">
+    <ul class="action-items">
+        <li>
+            <button id="export_pdf" type="button" class="btn btn-primary" disabled> Export to PDF </button>
+        </li>
+        <li>
+            <button id="export_csv" type="button" class="btn btn-info" disabled> Export to CSV </button>
+        </li>
+    </ul>
 </div>
-
-<div class="container">
-    <div style="display:block;">
-        @using (Html.BeginForm("ConvertHtmlCodeToPdf", "Home", FormMethod.Post))
-        {
-            <input type="text" id="TxtHtmlCode" name="TxtHtmlCode" />
-            <div id="dvExportedData">
-            </div>
-            <input type="submit" id="BtnConvert" value="Create PDF" />
-        }
-    </div>
+<hr style="margin-top:10px;" />
+<div id="reportContainer" style="height:1024px;"></div>
+<div id="output" style="margin: 30px;"></div>
+<div style="display:block;">
+    @using (Html.BeginForm("ConvertHtmlCodeToPdf", "Home", FormMethod.Post))
+    {
+        <input type="hidden" id="hdnHtmlCode" name="hdnHtmlCode" />
+        <div id="dvExportedData">
+        </div>
+        <input type="submit" id="BtnConvert" value="Create PDF" />
+    }
 </div>
 
 <script>
     alertify.defaults.notifier.delay = 15;
-
 
     var reportsAndVisuals = [
         { reportName: 'ReportSection9a26698070db0c678c17', reportAlias: 'Summary', visualName: 'e6f0a25e81434bac3d0b' },
@@ -232,13 +183,19 @@
     var cache_width, a4;
 
     // Read embed application token from Model
+    /**/
     var accessToken = "@Model.EmbedToken.Token";
+    /**/
 
     // Read embed URL from Model
+    /**/
     var embedUrl = "@Html.Raw(Model.EmbedUrl)";
+    /**/
 
     // Read report Id from Model
+    /**/
     var embedReportId = "@Model.Id";
+    /**/
 
     // Get models. models contains enums that can be used.
     var models = window['powerbi-client'].models;
@@ -264,7 +221,9 @@
     // Get a reference to the embedded report HTML element
     var reportContainer = $('#reportContainer')[0];
 
+    /**/
     if ("@Model.Username" != "") {
+        /**/
         $("#RLS").prop('checked', true);
         $("#RLSdiv").show();
     }
@@ -273,7 +232,9 @@
         $("#RLSdiv").hide();
     }
 
+    /**/
     if ("@Model.IsEffectiveIdentityRequired.GetValueOrDefault()" == "True") {
+        /**/
         $("#noRLSdiv").hide();
         $("#RLS").removeAttr("disabled");
         $("#RLS").change(function () {
@@ -335,12 +296,6 @@
         }
 
 
-        /*
-        page.getVisuals().then(function (pageVisuals) {
-
-        });
-        */
-
     });
 
 
@@ -349,10 +304,10 @@
         var data = event.detail;
 
         document.getElementById("export_pdf").disabled = false;
-        document.getElementById("export_pdf").addEventListener("click", Export_Data);
+        document.getElementById("export_pdf").addEventListener("click", exportToPDF);
 
-        document.getElementById("print_report").disabled = false;
-        document.getElementById("print_report").addEventListener("click", Print_Report);
+        document.getElementById("export_csv").disabled = false;
+        document.getElementById("export_csv").addEventListener("click", exportToCSV);
     });
 
 
@@ -400,7 +355,7 @@
 
 
 
-    function Export_Data() {
+    function Export_Data(selectedFileType) {
 
         console.log('exporting data...');
         // Get models. models contains enums that can be used.
@@ -447,11 +402,11 @@
                                 /* Get Column Names */
                                 var ColumNames = headAndData[0].splitComma();
 
-                                
+
 
                                 var rows = headAndData.slice(1);
                                 var dataRows = _.map(rows, function (val) { return val.splitComma(); });
-                                var selectedFileType = $('input[name=rdFileType]:checked').val();
+
 
                                 ga('send', {
                                     hitType: 'event',
@@ -475,7 +430,7 @@
                                     alertify.success((library.json.prettyPrint(obj)));
                                 }
 
-                                debugger;
+
 
                                 switch (selectedFileType) {
 
@@ -489,7 +444,7 @@
                                                 exportPDFPivoted(ColumNames, dataRows, reportName);
                                                 break;
                                         }
-                                       
+
                                         break;
 
                                     case "CSV":
@@ -516,94 +471,18 @@
             });
     }
 
-    function Print_Report() {
-
-        // Get a reference to the embedded report HTML element
-        var embedContainer = $('#reportContainer')[0];
-
-        // Get a reference to the embedded report.
-        report = powerbi.get(embedContainer);
-
-
-        // Retrieve the page collection and get the visuals for the first page.
-        report.getPages()
-            .then(function (pages) {
-
-                // Retrieve active page.
-                var activePage = pages.find(function (page) {
-                    return page.isActive
-                });
-
-                var reportVisual = _.find(reportsAndVisuals, function (rv) {
-                    return rv.reportName == activePage.name;
-                });
-
-                var reportName = reportVisual.visualName;
-                var pageName = activePage.name;
-
-                ga('send', {
-                    hitType: 'event',
-                    eventCategory: 'Print',
-                    eventAction: 'Print Report',
-                    eventLabel: reportName,
-                    fieldsObject: {
-                        PageName: pageName,
-                        ReportName: reportName
-                    }
-                });
-
-                var obj = {
-                    hitType: 'event',
-                    eventCategory: 'Print',
-                    eventAction: 'Print Report',
-                    eventLabel: reportName,
-                    fieldsObject: {
-                        PageName: pageName,
-                        ReportName: reportName
-                    }
-                }
-                if ($('#toggleNotifications').is(":checked")) {
-                    alertify.success((library.json.prettyPrint(obj)));
-                }
-
-            })
-            .catch(function (errors) {
-                alertify.error(errors.message);
-            });
-
-        // Trigger the print dialog for your browser.
-        report.print()
-            .catch(function (errors) {
-                alertify.error(errors.message);
-            });
-    }
-
-    function Set_Page(pageName) {
-        // Get a reference to the embedded report HTML element
-        var embedContainer = $('#reportContainer')[0];
-
-        // Get a reference to the embedded report.
-        report = powerbi.get(embedContainer);
-
-        // Retrieve the page collection, and then set the second page to be active.
-        report.getPages()
-            .then(function (pages) {
-
-                var selectedPage = _.find(pages, function (data) { return data.name == pageName; });
-
-                selectedPage.setActive()
-                    .catch(function (errors) {
-                        Log.log(errors);
-                    });
-            })
-            .catch(function (errors) {
-                Log.log(errors);
-            });
-    }
 </script>
 
 
 <script>
+
+    exportToPDF = function () {
+        Export_Data('PDF');
+    }
+
+    exportToCSV = function () {
+        Export_Data('CSV');
+    }
 
     getColumnArray2 = function (reportName, columns) {
         var result = [];
@@ -813,14 +692,23 @@
 
         for (var i = 0; i < rows.length; i++) {
             var row = table.insertRow(-1);
-            if (i % 2 != 0) {
+
+
+            if (i % 2 != 0 && i != rows.length - 1) {
                 row.setAttribute("style", "background-color: #dddddd;");
             }
 
             for (var j = 0; j < rows[i].length; j++) {
                 var dataCell = document.createElement("TD");
-                dataCell.innerHTML = rows[i][j].replace(/"/g, '');;
-                
+                dataCell.innerHTML = rows[i][j].replace(/"/g, '');
+
+                if (j > 0) {
+                    styleNormal = styleNormal + 'text-align: center;'
+                }
+                else {
+                    styleNormal = styleNormal + 'text-align: left;'
+                }
+
                 if (rows[i][j].indexOf('-') > -1) {
                     dataCell.setAttribute("style", styleNormal + "color: red;");
                 }
@@ -830,10 +718,10 @@
 
                 row.appendChild(dataCell);
             }
-            
+
         }
 
-        $('#TxtHtmlCode').val($('#dvExportedData').html());
+        $('#hdnHtmlCode').val($('#dvExportedData').html());
         document.getElementById('BtnConvert').click();
 
     }
@@ -1021,7 +909,7 @@
                                 headerCell.innerHTML = tableArray[i][j].total;
                                 row.appendChild(headerCell);
                                 break;
-                            
+
 
                             case "662140001cd759073b0d":
                                 headerCell = document.createElement("TH");
@@ -1037,7 +925,7 @@
 
                         }
 
-                       
+
 
                         headerCell = document.createElement("TH");
                         headerCell.setAttribute("style", styleNormal + styleHeader);
@@ -1049,13 +937,16 @@
                 }
                 else {
 
-                    
+
                     var style = styleNormal;
                     if (i == tableArray.length - 1 || j == tableArray[i].length - 1) {
                         style = style + styleHeader;
                     }
 
                     if (j > 0) {
+
+                        style = style + 'text-align: center;';
+
                         var dataCell = document.createElement("TD");
                         dataCell.innerHTML = tableArray[i][j].cost;
                         dataCell.setAttribute("style", style);
@@ -1089,7 +980,7 @@
 
                         }
 
-                       
+
 
                         dataCell = document.createElement("TD");
                         if (tableArray[i][j].yoy.indexOf('-') > -1) {
@@ -1102,6 +993,9 @@
 
                     }
                     else {
+
+                        style = style + 'text-align: left;';
+
                         var dataCell = document.createElement("TD");
                         dataCell.innerHTML = tableArray[i][j].replace(/"/g, '');
                         dataCell.setAttribute("style", style);
@@ -1112,7 +1006,7 @@
             }
         }
 
-        $('#TxtHtmlCode').val($('#dvExportedData').html());
+        $('#hdnHtmlCode').val($('#dvExportedData').html());
         document.getElementById('BtnConvert').click();
 
 
@@ -1178,17 +1072,6 @@
 
 <script>
 
-    $(document).ready(function () {
-        $(".dropdown-menu a").click(function () {
-            var selText = $(this).text();
-            var reportName = $(this).attr('data-page-name');
-            $('.selectReport').find('.dropdown-toggle').html(selText + ' <span class="caret"></span>');
-
-            Set_Page(reportName);
-        });
-    });
-
-
     if (!library)
         var library = {};
 
@@ -1213,63 +1096,6 @@
         }
     };
 
-    function getPivotArray(dataArray, rowIndex, colIndex, dataIndex) {
-        //Code from https://techbrij.com
-        var result = {}, ret = [];
-        var newCols = [];
-        for (var i = 0; i < dataArray.length; i++) {
-
-            if (!result[dataArray[i][rowIndex]]) {
-                result[dataArray[i][rowIndex]] = {};
-            }
-            result[dataArray[i][rowIndex]][dataArray[i][colIndex]] = dataArray[i][dataIndex];
-
-            //To get column names
-            if (newCols.indexOf(dataArray[i][colIndex]) == -1) {
-                newCols.push(dataArray[i][colIndex]);
-            }
-        }
-
-        newCols.sort();
-        var item = [];
-
-        //Add Header Row
-        item.push('Item');
-        item.push.apply(item, newCols);
-        ret.push(item);
-
-        //Add content
-        for (var key in result) {
-            item = [];
-            item.push(key);
-            for (var i = 0; i < newCols.length; i++) {
-                item.push(result[key][newCols[i]] || "-");
-            }
-            ret.push(item);
-        }
-        return ret;
-    }
-
-    function arrayToHTMLTable(myArray) {
-        var result = "<table border='1' cellpadding='7' cellspacing='0'>";
-        for (var i = 0; i < myArray.length; i++) {
-            result += "<tr>";
-            for (var j = 0; j < myArray[i].length; j++) {
-                result += "<td>" + myArray[i][j] + "</td>";
-            }
-            result += "</tr>";
-        }
-        result += "</table>";
-
-        return result;
-    }
-
-
-    function UpdateExportButtonText(fileType) {
-        $("#export_pdf").html('Export to ' + fileType);
-    }
-
-
     String.prototype.splitComma = function () {
         return this.split(',').reduce((accum, curr) => {
             if (accum.isConcatting) {
@@ -1283,5 +1109,5 @@
             return accum;
         }, { soFar: [], isConcatting: false }).soFar
     };
-    
+
 </script>

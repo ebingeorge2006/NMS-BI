@@ -233,6 +233,7 @@
     <Content Include="Scripts\powerbi.js" />
     <Content Include="Scripts\powerbi.min.js" />
     <Content Include="Scripts\pretty-json-min.js" />
+    <Content Include="Scripts\reports\report_b4d62e59-b521-436d-9780-96555806f85c.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\split_text_to_size.js" />

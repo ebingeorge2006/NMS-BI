@@ -24,7 +24,7 @@
 <!-- End Google Analytics -->
 
 <script src="https://npmcdn.com/es6-promise@3.2.1"></script>
-<script src="~/scripts/powerbi.js"></script>
+<script src="~/scripts/powerbiALT.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.0/underscore-min.js"></script>
 <script type="text/javascript" src="~/Scripts/jspdf.debug.js"></script>
 <script type="text/javascript" src="~/Scripts/alertify.min.js"></script>
@@ -43,47 +43,24 @@
     return;
 }
 
-
-
-<div class="headerBI hb22">
-    <div style="display: none">
-     @using (Html.BeginForm("ConvertHtmlCodeToPdf", "Home", FormMethod.Post))
+<div class="headerBI" style="height:50px; padding-top: 10px;">
+    <ul class="action-items">
+        <li>
+            <div style="display:none;">
+                @using (Html.BeginForm("ConvertHtmlCodeToPdf", "Home", FormMethod.Post))
                 {
                     <input type="hidden" id="hdnHtmlCode" name="hdnHtmlCode" />
                     <input type="submit" id="CreatePDFDocument" value="Export To PDF Hidden" />
                     <div id="dvExportedData"></div>
                 }
-    </div>
-    <style>
-        .hb22 {
-           position: fixed;
-    left: 0px;
-    top: 50%;
-    z-index: 44;
-    padding: 10px 5px;
-    background-color: #16375a;
-    width: 50px;
-        }
-        .hb22 .btnico {
-            padding: 0px;
-    margin: 6px 0px;
-    border: 0px;
-    background-color: transparent;
-    outline: none;
-        }
-        .hb22 .btnico:visited, .hb22 .btnico:hover, .hb22 .btnico:active {
-            outline: 0px;
-            border: 0px;
-        }
-        .hb22 .btnico img{
-            height: 35px;
-            width: 35px;
-        }
-    </style>
-   <button id="export_pdf" type="button" class="btnico" disabled> <img src="/Images/pdf.svg" /> </button>
-            <button id="export_csv" type="button" class="btnico" disabled> <img src="/Images/excel.svg" /> </button>
+            </div>
+            <button id="export_pdf" type="button" class="btn btn-primary" disabled> Export to PDF </button>
+        </li>
+        <li>
+            <button id="export_csv" type="button" class="btn btn-info" disabled> Export to CSV </button>
+        </li>
+    </ul>
 </div>
-
 <div id="reportContainer"></div>
 
 <script>

@@ -28,7 +28,7 @@ var Export_Data = function (selectedFileType) {
             });
 
             var reportVisual = _.find(reportsAndVisuals, function (rv) {
-                return rv.reportName == activePage.name;
+                return rv.reportName === activePage.name;
             });
 
             var reportName = reportVisual.visualName;
@@ -39,7 +39,7 @@ var Export_Data = function (selectedFileType) {
 
                     // Retrieve the wanted visual.
                     var visual = visuals.find(function (visual) {
-                        return visual.name == reportName;
+                        return visual.name === reportName;
                     });
 
                     // Exports visual data
@@ -332,7 +332,7 @@ exportPDFTable = function (columns, rows, reportName) {
     for (var i = 0; i < columns.length; i++) {
         var headerCell = document.createElement("TH");
         headerCell.innerHTML = "<b>" + columns[i] + "</b>";
-        if (i == 0) {
+        if (i === 0) {
             styleHeader = styleHeader + "text-align: left;"
         }
         else {

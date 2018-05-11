@@ -795,7 +795,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!this.iframe) {
 	            var iframeContent = document.createElement("iframe");
 	            var embedUrl = this.config.embedUrl;
-	            iframeContent.setAttribute("style", "width:100%;height:calc(100vh - 6px);");
+	            iframeContent.setAttribute("style", "width:100%;height:calc(100vh - 56px);");
 	            iframeContent.setAttribute("src", embedUrl);
 	            iframeContent.setAttribute("scrolling", "no");
 	            iframeContent.setAttribute("allowfullscreen", "true");

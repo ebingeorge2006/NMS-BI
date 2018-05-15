@@ -2,7 +2,8 @@
     { reportName: 'ReportSection9a26698070db0c678c17', reportAlias: 'Summary', visualName: 'e6f0a25e81434bac3d0b' },
     { reportName: 'ReportSection8ace1946126730501097', reportAlias: 'Hotel Details', visualName: '662140001cd759073b0d' },
     { reportName: 'ReportSectionf9122c9f0517cd8707c4', reportAlias: 'Car Details', visualName: '51fb1a2e89534d957310' },
-    { reportName: 'ReportSection4af9717a16b38e3a54ba', reportAlias: 'Meal Details', visualName: '350444d0853509ccbc0c' }
+    { reportName: 'ReportSection4af9717a16b38e3a54ba', reportAlias: 'Meal Details', visualName: '350444d0853509ccbc0c' },
+    { reportName: 'ReportSection0f6af1864a94e119b8f1', reportAlias: 'NON US Summary', visualName: 'e6f0a25e81434bac3d0b'}
 ];
 
 
@@ -30,6 +31,8 @@ var Export_Data = function (selectedFileType) {
             var reportVisual = _.find(reportsAndVisuals, function (rv) {
                 return rv.reportName === activePage.name;
             });
+
+            debugger;
 
             var reportName = reportVisual.visualName;
             var pageName = activePage.name;

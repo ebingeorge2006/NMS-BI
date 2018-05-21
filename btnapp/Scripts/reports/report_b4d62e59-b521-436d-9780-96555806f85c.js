@@ -1,9 +1,11 @@
 ﻿var reportsAndVisuals = [
-    { reportName: 'ReportSection9a26698070db0c678c17', reportAlias: 'Summary', visualName: 'e6f0a25e81434bac3d0b' },
-    { reportName: 'ReportSection8ace1946126730501097', reportAlias: 'Hotel Details', visualName: '662140001cd759073b0d' },
-    { reportName: 'ReportSectionf9122c9f0517cd8707c4', reportAlias: 'Car Details', visualName: '51fb1a2e89534d957310' },
-    { reportName: 'ReportSection4af9717a16b38e3a54ba', reportAlias: 'Meal Details', visualName: '350444d0853509ccbc0c' },
-    { reportName: 'ReportSection0f6af1864a94e119b8f1', reportAlias: 'NON US Summary', visualName: 'e6f0a25e81434bac3d0b'}
+    { reportName: 'ReportSection9a26698070db0c678c17', reportAlias: 'Summary', visualName: 'e6f0a25e81434bac3d0b', isPivot : false, noOfHeaders: 1 },
+    { reportName: 'ReportSection8ace1946126730501097', reportAlias: 'Hotel Details', visualName: '662140001cd759073b0d', isPivot: true, noOfHeaders: 2 },
+    { reportName: 'ReportSectionf9122c9f0517cd8707c4', reportAlias: 'Car Details', visualName: '51fb1a2e89534d957310', isPivot: true, noOfHeaders: 2 },
+    { reportName: 'ReportSection4af9717a16b38e3a54ba', reportAlias: 'Meal Details', visualName: '350444d0853509ccbc0c', isPivot: true, noOfHeaders: 2 },
+    { reportName: 'ReportSection0f6af1864a94e119b8f1', reportAlias: 'NON US Summary', visualName: 'e6f0a25e81434bac3d0b', isPivot: false, noOfHeaders: 1 },
+    { reportName: 'ReportSectionb3967207c6138b9166f6', reportAlias: 'NON US Taxi Details', visualName: 'e6f0a25e81434bac3d0b', isPivot: true, noOfHeaders: 1 },
+    { reportName: 'ReportSection68f12fd270d53e885646', reportAlias: 'NON US Meal Details', visualName: 'e6f0a25e81434bac3d0b', isPivot: true, noOfHeaders: 2}
 ];
 
 
@@ -32,13 +34,14 @@ var Export_Data = function (selectedFileType) {
                 return rv.reportName === activePage.name;
             });
 
-            debugger;
 
             var reportName = reportVisual.visualName;
             var pageName = activePage.name;
 
             activePage.getVisuals()
                 .then(function (visuals) {
+
+                    
 
                     // Retrieve the wanted visual.
                     var visual = visuals.find(function (visual) {
@@ -85,20 +88,15 @@ var Export_Data = function (selectedFileType) {
                             }
 
 
-
                             switch (selectedFileType) {
 
                                 case "PDF":
-                                    switch (reportName) {
-                                        case "e6f0a25e81434bac3d0b":
-                                            exportPDFTable(ColumNames, dataRows, reportName);
-                                            break;
-
-                                        default:
-                                            exportPDFPivoted(ColumNames, dataRows, reportName);
-                                            break;
+                                    if (reportVisual.isPivot) {
+                                        exportPDFPivoted(ColumNames, dataRows, reportVisual.reportName, reportVisual.noOfHeaders);
                                     }
-
+                                    else {
+                                        exportPDFTable(ColumNames, dataRows, reportVisual.reportName);
+                                    }
                                     break;
 
                                 case "CSV":
@@ -135,17 +133,27 @@ exportToCSV = function () {
 
 getColumnArray2 = function (reportName, columns) {
     var result = [];
+    
+
     switch (reportName) {
-        case "51fb1a2e89534d957310":
+        case "ReportSectionf9122c9f0517cd8707c4":
             result = columns.slice(2);
             break;
 
-        case "662140001cd759073b0d":
+        case "ReportSection8ace1946126730501097":
             result = columns.slice(1, columns.length - 1);
             break;
 
-        case "350444d0853509ccbc0c":
+        case "ReportSection4af9717a16b38e3a54ba":
             result = columns.slice(2);
+            break;
+
+        case "ReportSection68f12fd270d53e885646":
+            result = columns.slice(1, columns.length - 1);
+            break;
+
+        case "ReportSectionb3967207c6138b9166f6":
+            result = columns.slice(1);
             break;
 
         default:
@@ -159,9 +167,8 @@ getColumnArray2 = function (reportName, columns) {
 getPivotColumn = function (reportName, columnArray, groupName) {
     var pivotColumn = {};
 
-
     switch (reportName) {
-        case "51fb1a2e89534d957310":
+        case "ReportSectionf9122c9f0517cd8707c4":
             pivotColumn = {
                 cost: columnArray[0],
                 taxes: columnArray[1],
@@ -171,7 +178,7 @@ getPivotColumn = function (reportName, columnArray, groupName) {
             };
             break;
 
-        case "662140001cd759073b0d":
+        case "ReportSection8ace1946126730501097":
             pivotColumn = {
                 cost: columnArray[0],
                 taxes: columnArray[1],
@@ -181,10 +188,33 @@ getPivotColumn = function (reportName, columnArray, groupName) {
             };
             break;
 
-        case "350444d0853509ccbc0c":
+        case "ReportSection4af9717a16b38e3a54ba":
             pivotColumn = {
                 cost: columnArray[0],
                 yoy: columnArray[1],
+                group: groupName
+            };
+            break;
+
+        case "ReportSection4af9717a16b38e3a54ba":
+            pivotColumn = {
+                cost: columnArray[0],
+                yoy: columnArray[1],
+                group: groupName
+            };
+            break;
+
+        case "ReportSection68f12fd270d53e885646":
+            pivotColumn = {
+                cost: columnArray[0],
+                yoy: columnArray[1],
+                group: groupName
+            };
+            break;
+
+        case "ReportSectionb3967207c6138b9166f6":
+            pivotColumn = {
+                cost: columnArray[0],
                 group: groupName
             };
             break;
@@ -205,10 +235,9 @@ getPivotColumn = function (reportName, columnArray, groupName) {
 
 getFoundPivotColumn = function (reportName, columnArray, groupName) {
     var pivotColumn = {};
-
-
+    
     switch (reportName) {
-        case "51fb1a2e89534d957310":
+        case "ReportSectionf9122c9f0517cd8707c4":
             pivotColumn = {
                 cost: columnArray[2],
                 taxes: columnArray[3],
@@ -218,7 +247,7 @@ getFoundPivotColumn = function (reportName, columnArray, groupName) {
             };
             break;
 
-        case "662140001cd759073b0d":
+        case "ReportSection8ace1946126730501097":
             pivotColumn = {
                 cost: columnArray[1],
                 taxes: columnArray[2],
@@ -228,13 +257,30 @@ getFoundPivotColumn = function (reportName, columnArray, groupName) {
             };
             break;
 
-        case "350444d0853509ccbc0c":
+        case "ReportSection4af9717a16b38e3a54ba":
             pivotColumn = {
                 cost: columnArray[2],
                 yoy: columnArray[3],
                 group: groupName
             };
             break;
+
+        case "ReportSection68f12fd270d53e885646":
+            pivotColumn = {
+                cost: columnArray[1],
+                yoy: columnArray[2],
+                group: groupName
+            };
+            break;
+
+        case "ReportSectionb3967207c6138b9166f6":
+            pivotColumn = {
+                cost: columnArray[1],
+                group: groupName
+            };
+            break;
+
+            
 
         default:
             pivotColumn = {
@@ -252,10 +298,9 @@ getFoundPivotColumn = function (reportName, columnArray, groupName) {
 
 getCalulatedPivotColumn = function (reportName, dataArray, groupName) {
     var pivotColumn = {};
-
-
+    
     switch (reportName) {
-        case "51fb1a2e89534d957310":
+        case "ReportSectionf9122c9f0517cd8707c4":
             pivotColumn = {
                 cost: '$' + (_.reduce(dataArray, function (memo, num) { return (memo + Number(num.cost.replace(/[^0-9\.-]+/g, ""))); }, 0) / dataArray.length).toFixed(2).toString(),
                 taxes: '$' + (_.reduce(dataArray, function (memo, num) { return (memo + Number(num.taxes.replace(/[^0-9\.-]+/g, ""))); }, 0) / dataArray.length).toFixed(2).toString(),
@@ -265,7 +310,7 @@ getCalulatedPivotColumn = function (reportName, dataArray, groupName) {
             }
             break;
 
-        case "662140001cd759073b0d":
+        case "ReportSection8ace1946126730501097":
             pivotColumn = {
                 cost: '$' + (_.reduce(dataArray, function (memo, num) { return (memo + Number(num.cost.replace(/[^0-9\.-]+/g, ""))); }, 0) / dataArray.length).toFixed(2).toString(),
                 taxes: '$' + (_.reduce(dataArray, function (memo, num) { return (memo + Number(num.taxes.replace(/[^0-9\.-]+/g, ""))); }, 0) / dataArray.length).toFixed(2).toString(),
@@ -275,13 +320,31 @@ getCalulatedPivotColumn = function (reportName, dataArray, groupName) {
             }
             break;
 
-        case "350444d0853509ccbc0c":
+        case "ReportSection4af9717a16b38e3a54ba":
             pivotColumn = {
                 cost: '$' + (_.reduce(dataArray, function (memo, num) { return (memo + Number(num.cost.replace(/[^0-9\.-]+/g, ""))); }, 0) / dataArray.length).toFixed(2).toString(),
                 yoy: (_.reduce(dataArray, function (memo, num) { return (memo + Number(num.yoy.replace(/[^0-9\.-]+/g, ""))); }, 0) / dataArray.length).toFixed(2).toString() + '%',
                 group: groupName
             }
             break;
+
+        case "ReportSection68f12fd270d53e885646":
+            pivotColumn = {
+                cost: '$' + (_.reduce(dataArray, function (memo, num) { return (memo + Number(num.cost.replace(/[^0-9\.-]+/g, ""))); }, 0) / dataArray.length).toFixed(2).toString(),
+                yoy: (_.reduce(dataArray, function (memo, num) { return (memo + Number(num.yoy.replace(/[^0-9\.-]+/g, ""))); }, 0) / dataArray.length).toFixed(2).toString() + '%',
+                group: groupName
+            }
+            break;
+
+        case "ReportSectionb3967207c6138b9166f6":
+            pivotColumn = {
+                cost: '$' + (_.reduce(dataArray, function (memo, num) { return (memo + Number(num.cost.replace(/[^0-9\.-]+/g, ""))); }, 0) / dataArray.length).toFixed(2).toString(),
+                group: groupName
+            }
+            break;
+            
+
+            
 
         default:
             pivotColumn = {
@@ -299,18 +362,27 @@ getCalulatedPivotColumn = function (reportName, dataArray, groupName) {
 
 getColumnGroupPosition = function (reportName, columns) {
     var result;
-    switch (reportName) {
-        case "51fb1a2e89534d957310":
+
+   switch (reportName) {
+        case "ReportSectionf9122c9f0517cd8707c4":
             result = 1
             break;
 
-        case "662140001cd759073b0d":
+        case "ReportSection8ace1946126730501097":
             result = columns.length - 1;
             break;
 
-        case "350444d0853509ccbc0c":
+        case "ReportSection4af9717a16b38e3a54ba":
             result = 1;
             break;
+
+        case "ReportSection68f12fd270d53e885646":
+            result = columns.length - 1;
+           break;
+
+       case "ReportSectionb3967207c6138b9166f6":
+           result = columns.length - 1;
+           break;
 
         default:
             result = columns.length - 1;
@@ -377,13 +449,15 @@ exportPDFTable = function (columns, rows, reportName) {
 
     }
 
-    $('#hdnHtmlCode').val($('#dvExportedData').html());
+    var htmlTableString = $('#dvExportedData').html();
+    var htmlTableStringCompressed = LZString.compressToUTF16(htmlTableString);
+
+    $('#hdnHtmlCode').val(htmlTableStringCompressed);
     document.getElementById('CreatePDFDocument').click();
 
 }
 
-exportPDFPivoted = function (columns, rows, reportName) {
-
+exportPDFPivoted = function (columns, rows, reportName, totalHeaders) {
 
 
     rows = _.filter(rows, function (num) { return num.length > 1; });
@@ -393,295 +467,459 @@ exportPDFPivoted = function (columns, rows, reportName) {
     var startHeadRow1 = {
         text: '',
         isAdded: false
-    }, startHeadRow2 = {
-        ext: '',
+    },
+    startHeadRow2 = {
+        text: '',
         isAdded: false
-    };
+    };;
     var colArray1 = [], colArray2 = [];
     var tableArray = [];
 
+    switch (totalHeaders) {
+        case 1:
+            startHeadRow1.text = columns[0];
 
-    startHeadRow1.text = columns[getColumnGroupPosition(reportName, columns)];
-    startHeadRow2.text = columns[0];
-
-    _(colGroup).each(function (elem, key) {
-        if (!startHeadRow1.isAdded) {
-            colArray1.push(startHeadRow1.text);
-            startHeadRow1.isAdded = true;
-        }
-        colArray1.push(key);
-    });
-    colArray1.push('Total');
-
-    tableArray.push(colArray1);
-
-
-    colArray2 = getColumnArray2(reportName, columns); //columns.slice(1, columns.length - 1);
-
-    var pivotColumn = getPivotColumn(reportName, colArray2, '');
-
-    var tempArray = [];
-    _(colGroup).each(function (elem, key) {
-        if (!startHeadRow2.isAdded) {
-            tempArray.push(startHeadRow2.text);
-            startHeadRow2.isAdded = true;
-        }
-        tempArray.push(pivotColumn);
-    });
-    tempArray.push(pivotColumn); //for totals
-
-    tableArray.push(tempArray);
-
-    var rowGroupArray = [];
-    _(rowsGroup).each(function (elem, key) {
-        rowGroupArray.push(elem)
-    });
-
-
-
-    tempArray = [];
-    var colTitleArray = colArray1.slice(1, colArray1.length - 1);
-    for (var i = 0; i < rowGroupArray.length; i++) {
-        tempArray = [];
-        tempArray.push(rowGroupArray[i][0][0]);
-        for (j = 0; j < colTitleArray.length; j++) {
-
-            var found = _.find(rowGroupArray[i], function (obj) { return obj[getColumnGroupPosition(reportName, obj)] == colTitleArray[j] });
-            if (found === undefined) {
-                pivotColumn = getFoundPivotColumn(reportName, ['', '', '', '', ''], colTitleArray[j]);
-            }
-            else {
-                pivotColumn = getFoundPivotColumn(reportName, found, colTitleArray[j]);
-            }
-
-
-            tempArray.push(pivotColumn);
-        }
-        var dataArray = tempArray.slice(1);
-
-        pivotColumn = getCalulatedPivotColumn(reportName, dataArray, '');
-        tempArray.push(pivotColumn);
-        tableArray.push(tempArray);
-    }
-
-    tempArray = [];
-    tempArray.push('Total');
-
-    var colGroup1 = colArray1.slice(1, colArray1.length - 1);
-    var tableDataArray = tableArray.slice(2);
-
-
-
-    for (var i = 1; i <= colArray1.slice(1).length; i++) {
-        dataArray = [];
-        for (var j = 0; j < tableDataArray.length; j++) {
-
-            var pivotColumn = {};
-            if (tableDataArray[j][i].taxes === undefined || tableDataArray[j][i].total == undefined) {
-                var tdArray = [
-                    tableDataArray[j][i].cost,
-                    tableDataArray[j][i].yoy
-                ]
-                pivotColumn = getPivotColumn(reportName, tdArray, '');
-            }
-            else {
-                var tdArray = [
-                    tableDataArray[j][i].cost,
-                    tableDataArray[j][i].taxes,
-                    tableDataArray[j][i].total,
-                    tableDataArray[j][i].yoy
-                ]
-                pivotColumn = getPivotColumn(reportName, tdArray, '');
-            }
-            dataArray.push(pivotColumn);
-        }
-        var pivotColumn = getCalulatedPivotColumn(reportName, dataArray, '');
-
-        tempArray.push(pivotColumn);
-    }
-
-    tableArray.push(tempArray);
-
-
-
-
-    var exportedData = document.createElement('TABLE');
-    exportedData.setAttribute('id', 'exportedData');
-    exportedData.setAttribute('width', '2000px');
-    document.getElementById('dvExportedData').innerHTML = exportedData.outerHTML;
-    var table = document.getElementById("exportedData");
-
-    var styleNormal = "font-family: Calibri; font-size: 24px; height: 25px;";
-    var styleHeader = "padding: 2px 6px 3px 5px; color: rgb(255, 255, 255); background-color: rgb(22, 55, 90); box-shadow: black 0px 0px 0px 0px inset, rgb(179, 179, 179) -1px 0px 0px 0px inset, rgb(214, 214, 214) 0px -1px 0px 0px inset, black 0px 0px 0px 0px inset; box-sizing: border-box; height: 19px;";
-
-    for (var i = 0; i < tableArray.length; i++) {
-        var row = table.insertRow(-1);
-
-
-        if (i % 2 != 0) {
-            row.setAttribute("style", "background-color: #dddddd;");
-        }
-
-        for (var j = 0; j < tableArray[i].length; j++) {
-
-            if (i == 1 && j == 0) {
-                styleHeader = styleHeader + "text-align: left;"
-            }
-            else {
-                styleHeader = styleHeader + "text-align: center;"
-            }
-
-            if (j == tableArray[i].length - 1 || i == tableArray.length) {
-                styleHeader = styleHeader + "font-weight: bold;"
-            }
-
-            if (i <= 1) {
-
-                if (i == 0 && j == 0) {
-                    var headerCell = document.createElement("TH");
-                    headerCell.innerHTML = "<b>" + tableArray[i][j].replace(/ /g, '-'); + "</b>";
-
-                    headerCell.setAttribute("style", styleNormal + styleHeader);
-                    row.appendChild(headerCell);
+            _(colGroup).each(function (elem, key) {
+                if (!startHeadRow1.isAdded) {
+                    colArray1.push(startHeadRow1.text);
+                    startHeadRow1.isAdded = true;
                 }
+                colArray1.push(key);
+            });
+            colArray1.push('Total');
+            tableArray.push(colArray1);
 
-                if (i == 0 && j > 0) {
-                    var headerCell = document.createElement("TH");
-                    headerCell.setAttribute('colspan', colArray2.length);
-                    headerCell.setAttribute("style", styleNormal + styleHeader);
-                    headerCell.innerHTML = "<b>" + tableArray[i][j].replace(/ /g, '-'); + "</b>";
-                    row.appendChild(headerCell);
-                }
+            var rowGroupArray = [];
+            _(rowsGroup).each(function (elem, key) {
+                rowGroupArray.push(elem)
+            });
 
-                if (i == 1 && j == 0) {
-                    var headerCell = document.createElement("TH");
-                    headerCell.innerHTML = tableArray[i][j].replace(/ /g, '-');;
-                    headerCell.setAttribute("style", styleNormal + styleHeader);
-                    row.appendChild(headerCell);
-                }
+            tempArray = [];
+            var colTitleArray = colArray1.slice(1, colArray1.length - 1);
+            for (var i = 0; i < rowGroupArray.length; i++) {
+                tempArray = [];
+                tempArray.push(rowGroupArray[i][0][0]);
+                for (j = 0; j < colTitleArray.length; j++) {
 
-                if (i == 1 && j > 0) {
-                    var headerCell = document.createElement("TH");
-                    headerCell.innerHTML = "Cost";
-                    headerCell.setAttribute("style", styleNormal + styleHeader);
-                    row.appendChild(headerCell);
-
-                    switch (reportName) {
-
-                        case "51fb1a2e89534d957310":
-                            headerCell = document.createElement("TH");
-                            headerCell.setAttribute("style", styleNormal + styleHeader);
-                            headerCell.innerHTML = tableArray[i][j].taxes;
-                            row.appendChild(headerCell);
-
-                            headerCell = document.createElement("TH");
-                            headerCell.setAttribute("style", styleNormal + styleHeader);
-                            headerCell.innerHTML = tableArray[i][j].total;
-                            row.appendChild(headerCell);
-                            break;
-
-
-                        case "662140001cd759073b0d":
-                            headerCell = document.createElement("TH");
-                            headerCell.setAttribute("style", styleNormal + styleHeader);
-                            headerCell.innerHTML = tableArray[i][j].taxes;
-                            row.appendChild(headerCell);
-
-                            headerCell = document.createElement("TH");
-                            headerCell.setAttribute("style", styleNormal + styleHeader);
-                            headerCell.innerHTML = tableArray[i][j].total;
-                            row.appendChild(headerCell);
-                            break;
-
+                    var found = _.find(rowGroupArray[i], function (obj) { return obj[getColumnGroupPosition(reportName, obj)] == colTitleArray[j] });
+                    if (found === undefined) {
+                        pivotColumn = getFoundPivotColumn(reportName, ['', '', '', '', ''], colTitleArray[j]);
+                    }
+                    else {
+                        pivotColumn = getFoundPivotColumn(reportName, found, colTitleArray[j]);
                     }
 
 
-
-                    headerCell = document.createElement("TH");
-                    headerCell.setAttribute("style", styleNormal + styleHeader);
-                    headerCell.innerHTML = tableArray[i][j].yoy;
-                    row.appendChild(headerCell);
-
+                    tempArray.push(pivotColumn);
                 }
+                var dataArray = tempArray.slice(1);
 
+                pivotColumn = getCalulatedPivotColumn(reportName, dataArray, '');
+                tempArray.push(pivotColumn);
+                tableArray.push(tempArray);
             }
-            else {
+
+            tempArray = [];
+            tempArray.push('Total');
+
+            var colGroup1 = colArray1.slice(1, colArray1.length - 1);
+            var tableDataArray = tableArray.slice(totalHeaders);
 
 
-                var style = styleNormal;
-                if (i == tableArray.length - 1 || j == tableArray[i].length - 1) {
-                    style = style + styleHeader;
+
+            for (var i = 1; i <= colArray1.slice(1).length; i++) {
+                dataArray = [];
+                for (var j = 0; j < tableDataArray.length; j++) {
+
+                    var pivotColumn = {};
+                    var tdArray = [
+                        tableDataArray[j][i].cost
+                    ]
+                    pivotColumn = getPivotColumn(reportName, tdArray, '');
+                    dataArray.push(pivotColumn);
+                }
+                var pivotColumn = getCalulatedPivotColumn(reportName, dataArray, '');
+                tempArray.push(pivotColumn);
+            }
+            tableArray.push(tempArray);
+
+            var exportedData = document.createElement('TABLE');
+            exportedData.setAttribute('id', 'exportedData');
+            exportedData.setAttribute('width', '2000px');
+            document.getElementById('dvExportedData').innerHTML = exportedData.outerHTML;
+            var table = document.getElementById("exportedData");
+
+            var styleNormal = "font-family: Calibri; font-size: 24px; height: 25px;";
+            var styleHeader = "padding: 2px 6px 3px 5px; color: rgb(255, 255, 255); background-color: rgb(22, 55, 90); box-shadow: black 0px 0px 0px 0px inset, rgb(179, 179, 179) -1px 0px 0px 0px inset, rgb(214, 214, 214) 0px -1px 0px 0px inset, black 0px 0px 0px 0px inset; box-sizing: border-box; height: 19px;";
+
+            for (var i = 0; i < tableArray.length; i++) {
+                var row = table.insertRow(-1);
+
+
+                if (i % 2 != 0) {
+                    row.setAttribute("style", "background-color: #dddddd;");
                 }
 
-                if (j > 0) {
+                for (var j = 0; j < tableArray[i].length; j++) {
 
-                    style = style + 'text-align: center;';
+                    if (i == 0 && j == 0) {
+                        styleHeader = styleHeader + "text-align: left;"
+                    }
+                    else {
+                        styleHeader = styleHeader + "text-align: center;"
+                    }
+
+                    if (j == tableArray[i].length - 1 || i == tableArray.length) {
+                        styleHeader = styleHeader + "font-weight: bold;"
+                    }
+
+                    if (i < 1) {
+
+                        if (i == 0 && j == 0) {
+                            var headerCell = document.createElement("TH");
+                            headerCell.innerHTML = "<b>" + tableArray[i][j].replace(/ /g, '-'); + "</b>";
+
+                            headerCell.setAttribute("style", styleNormal + styleHeader);
+                            row.appendChild(headerCell);
+                        }
+
+                        if (i == 0 && j > 0) {
+                            var headerCell = document.createElement("TH");
+                            headerCell.setAttribute('colspan', colArray2.length);
+                            headerCell.setAttribute("style", styleNormal + styleHeader);
+                            headerCell.innerHTML = "<b>" + tableArray[i][j].replace(/ /g, '-'); + "</b>";
+                            row.appendChild(headerCell);
+                        }
+                    }
+                    else {
 
 
-                    var dataCell = document.createElement("TD");
-                    dataCell.innerHTML = tableArray[i][j].cost;
+                        var style = styleNormal;
+                        if (i == tableArray.length - 1 || j == tableArray[i].length - 1) {
+                            style = style + styleHeader;
+                        }
 
+                        if (j > 0) {
 
+                            style = style + 'text-align: center;';
 
-                    dataCell.setAttribute("style", style);
-                    row.appendChild(dataCell);
+                            switch (reportName) {
 
-                    switch (reportName) {
+                                case "ReportSectionb3967207c6138b9166f6":
+                                    dataCell = document.createElement("TD");
+                                    dataCell.innerHTML = tableArray[i][j].cost;
+                                    dataCell.setAttribute("style", style);
+                                    row.appendChild(dataCell);
+                                    break;
+                            }
 
-                        case "51fb1a2e89534d957310":
-                            dataCell = document.createElement("TD");
-                            dataCell.innerHTML = tableArray[i][j].taxes;
+                        }
+                        else {
+
+                            style = style + 'text-align: left;';
+
+                            var dataCell = document.createElement("TD");
+                            dataCell.innerHTML = tableArray[i][j].replace(/"/g, '');
                             dataCell.setAttribute("style", style);
                             row.appendChild(dataCell);
+                        }
 
-                            dataCell = document.createElement("TD");
-                            dataCell.innerHTML = tableArray[i][j].total;
-                            dataCell.setAttribute("style", style);
-                            row.appendChild(dataCell);
-                            break;
+                    }
+                }
+            }
+            break;
 
-                        case "662140001cd759073b0d":
-                            dataCell = document.createElement("TD");
-                            dataCell.innerHTML = tableArray[i][j].taxes;
-                            dataCell.setAttribute("style", style);
-                            row.appendChild(dataCell);
+        case 2:
+            startHeadRow1.text = columns[getColumnGroupPosition(reportName, columns)];
+            startHeadRow2.text = columns[0];
 
-                            dataCell = document.createElement("TD");
-                            dataCell.innerHTML = tableArray[i][j].total;
-                            dataCell.setAttribute("style", style);
-                            row.appendChild(dataCell);
-                            break;
+            _(colGroup).each(function (elem, key) {
+                if (!startHeadRow1.isAdded) {
+                    colArray1.push(startHeadRow1.text);
+                    startHeadRow1.isAdded = true;
+                }
+                colArray1.push(key);
+            });
+            colArray1.push('Total');
 
+            tableArray.push(colArray1);
+
+
+            colArray2 = getColumnArray2(reportName, columns); //columns.slice(1, columns.length - 1);
+
+            var pivotColumn = getPivotColumn(reportName, colArray2, '');
+
+            var tempArray = [];
+            _(colGroup).each(function (elem, key) {
+                if (!startHeadRow2.isAdded) {
+                    tempArray.push(startHeadRow2.text);
+                    startHeadRow2.isAdded = true;
+                }
+                tempArray.push(pivotColumn);
+            });
+            tempArray.push(pivotColumn); //for totals
+
+            tableArray.push(tempArray);
+
+            var rowGroupArray = [];
+            _(rowsGroup).each(function (elem, key) {
+                rowGroupArray.push(elem)
+            });
+
+
+
+            tempArray = [];
+            var colTitleArray = colArray1.slice(1, colArray1.length - 1);
+            for (var i = 0; i < rowGroupArray.length; i++) {
+                tempArray = [];
+                tempArray.push(rowGroupArray[i][0][0]);
+                for (j = 0; j < colTitleArray.length; j++) {
+
+                    var found = _.find(rowGroupArray[i], function (obj) { return obj[getColumnGroupPosition(reportName, obj)] == colTitleArray[j] });
+                    if (found === undefined) {
+                        pivotColumn = getFoundPivotColumn(reportName, ['', '', '', '', ''], colTitleArray[j]);
+                    }
+                    else {
+                        pivotColumn = getFoundPivotColumn(reportName, found, colTitleArray[j]);
                     }
 
 
+                    tempArray.push(pivotColumn);
+                }
+                var dataArray = tempArray.slice(1);
 
-                    dataCell = document.createElement("TD");
-                    if (tableArray[i][j].yoy.indexOf('-') > -1) {
-                        style = style + "color: red;"
+                pivotColumn = getCalulatedPivotColumn(reportName, dataArray, '');
+                tempArray.push(pivotColumn);
+                tableArray.push(tempArray);
+            }
+
+            tempArray = [];
+            tempArray.push('Total');
+
+            var colGroup1 = colArray1.slice(1, colArray1.length - 1);
+            var tableDataArray = tableArray.slice(2);
+
+
+
+            for (var i = 1; i <= colArray1.slice(1).length; i++) {
+                dataArray = [];
+                for (var j = 0; j < tableDataArray.length; j++) {
+
+                    var pivotColumn = {};
+                    if (tableDataArray[j][i].taxes === undefined || tableDataArray[j][i].total == undefined) {
+                        var tdArray = [
+                            tableDataArray[j][i].cost,
+                            tableDataArray[j][i].yoy
+                        ]
+                        pivotColumn = getPivotColumn(reportName, tdArray, '');
+                    }
+                    else {
+                        var tdArray = [
+                            tableDataArray[j][i].cost,
+                            tableDataArray[j][i].taxes,
+                            tableDataArray[j][i].total,
+                            tableDataArray[j][i].yoy
+                        ]
+                        pivotColumn = getPivotColumn(reportName, tdArray, '');
+                    }
+                    dataArray.push(pivotColumn);
+                }
+                var pivotColumn = getCalulatedPivotColumn(reportName, dataArray, '');
+
+                tempArray.push(pivotColumn);
+            }
+
+            tableArray.push(tempArray);
+
+
+
+
+            var exportedData = document.createElement('TABLE');
+            exportedData.setAttribute('id', 'exportedData');
+            exportedData.setAttribute('width', '2000px');
+            document.getElementById('dvExportedData').innerHTML = exportedData.outerHTML;
+            var table = document.getElementById("exportedData");
+
+            var styleNormal = "font-family: Calibri; font-size: 24px; height: 25px;";
+            var styleHeader = "padding: 2px 6px 3px 5px; color: rgb(255, 255, 255); background-color: rgb(22, 55, 90); box-shadow: black 0px 0px 0px 0px inset, rgb(179, 179, 179) -1px 0px 0px 0px inset, rgb(214, 214, 214) 0px -1px 0px 0px inset, black 0px 0px 0px 0px inset; box-sizing: border-box; height: 19px;";
+
+            for (var i = 0; i < tableArray.length; i++) {
+                var row = table.insertRow(-1);
+
+
+                if (i % 2 != 0) {
+                    row.setAttribute("style", "background-color: #dddddd;");
+                }
+
+                for (var j = 0; j < tableArray[i].length; j++) {
+
+                    if (i == 1 && j == 0) {
+                        styleHeader = styleHeader + "text-align: left;"
+                    }
+                    else {
+                        styleHeader = styleHeader + "text-align: center;"
                     }
 
-                    dataCell.innerHTML = tableArray[i][j].yoy;
-                    dataCell.setAttribute("style", style);
-                    row.appendChild(dataCell);
+                    if (j == tableArray[i].length - 1 || i == tableArray.length) {
+                        styleHeader = styleHeader + "font-weight: bold;"
+                    }
+
+                    if (i <= 1) {
+
+                        if (i == 0 && j == 0) {
+                            var headerCell = document.createElement("TH");
+                            headerCell.innerHTML = "<b>" + tableArray[i][j].replace(/ /g, '-'); + "</b>";
+
+                            headerCell.setAttribute("style", styleNormal + styleHeader);
+                            row.appendChild(headerCell);
+                        }
+
+                        if (i == 0 && j > 0) {
+                            var headerCell = document.createElement("TH");
+                            headerCell.setAttribute('colspan', colArray2.length);
+                            headerCell.setAttribute("style", styleNormal + styleHeader);
+                            headerCell.innerHTML = "<b>" + tableArray[i][j].replace(/ /g, '-'); + "</b>";
+                            row.appendChild(headerCell);
+                        }
+
+                        if (i == 1 && j == 0) {
+                            var headerCell = document.createElement("TH");
+                            headerCell.innerHTML = tableArray[i][j].replace(/ /g, '-');;
+                            headerCell.setAttribute("style", styleNormal + styleHeader);
+                            row.appendChild(headerCell);
+                        }
+
+                        if (i == 1 && j > 0) {
+                            var headerCell = document.createElement("TH");
+                            headerCell.innerHTML = "Cost";
+                            headerCell.setAttribute("style", styleNormal + styleHeader);
+                            row.appendChild(headerCell);
+
+                            switch (reportName) {
+
+                                case "ReportSectionf9122c9f0517cd8707c4":
+                                    headerCell = document.createElement("TH");
+                                    headerCell.setAttribute("style", styleNormal + styleHeader);
+                                    headerCell.innerHTML = tableArray[i][j].taxes;
+                                    row.appendChild(headerCell);
+
+                                    headerCell = document.createElement("TH");
+                                    headerCell.setAttribute("style", styleNormal + styleHeader);
+                                    headerCell.innerHTML = tableArray[i][j].total;
+                                    row.appendChild(headerCell);
+                                    break;
 
 
+                                case "ReportSection8ace1946126730501097":
+                                    headerCell = document.createElement("TH");
+                                    headerCell.setAttribute("style", styleNormal + styleHeader);
+                                    headerCell.innerHTML = tableArray[i][j].taxes;
+                                    row.appendChild(headerCell);
+
+                                    headerCell = document.createElement("TH");
+                                    headerCell.setAttribute("style", styleNormal + styleHeader);
+                                    headerCell.innerHTML = tableArray[i][j].total;
+                                    row.appendChild(headerCell);
+                                    break;
+
+                            }
+
+
+
+                            headerCell = document.createElement("TH");
+                            headerCell.setAttribute("style", styleNormal + styleHeader);
+                            headerCell.innerHTML = tableArray[i][j].yoy;
+                            row.appendChild(headerCell);
+
+                        }
+
+                    }
+                    else {
+
+
+                        var style = styleNormal;
+                        if (i == tableArray.length - 1 || j == tableArray[i].length - 1) {
+                            style = style + styleHeader;
+                        }
+
+                        if (j > 0) {
+
+                            style = style + 'text-align: center;';
+
+
+                            var dataCell = document.createElement("TD");
+                            dataCell.innerHTML = tableArray[i][j].cost;
+
+
+
+                            dataCell.setAttribute("style", style);
+                            row.appendChild(dataCell);
+
+                            switch (reportName) {
+
+                                case "ReportSectionf9122c9f0517cd8707c4":
+                                    dataCell = document.createElement("TD");
+                                    dataCell.innerHTML = tableArray[i][j].taxes;
+                                    dataCell.setAttribute("style", style);
+                                    row.appendChild(dataCell);
+
+                                    dataCell = document.createElement("TD");
+                                    dataCell.innerHTML = tableArray[i][j].total;
+                                    dataCell.setAttribute("style", style);
+                                    row.appendChild(dataCell);
+                                    break;
+
+                                case "ReportSection8ace1946126730501097":
+                                    dataCell = document.createElement("TD");
+                                    dataCell.innerHTML = tableArray[i][j].taxes;
+                                    dataCell.setAttribute("style", style);
+                                    row.appendChild(dataCell);
+
+                                    dataCell = document.createElement("TD");
+                                    dataCell.innerHTML = tableArray[i][j].total;
+                                    dataCell.setAttribute("style", style);
+                                    row.appendChild(dataCell);
+                                    break;
+
+                            }
+
+
+                            if (tableArray[i][j].yoy !== undefined) {
+                                dataCell = document.createElement("TD");
+                                if (tableArray[i][j].yoy.indexOf('-') > -1) {
+                                    style = style + "color: red;"
+                                }
+
+                                dataCell.innerHTML = tableArray[i][j].yoy;
+                                dataCell.setAttribute("style", style);
+                                row.appendChild(dataCell);
+                            }
+
+
+
+
+                        }
+                        else {
+
+                            style = style + 'text-align: left;';
+
+                            var dataCell = document.createElement("TD");
+                            dataCell.innerHTML = tableArray[i][j].replace(/"/g, '');
+                            dataCell.setAttribute("style", style);
+                            row.appendChild(dataCell);
+                        }
+
+                    }
                 }
-                else {
-
-                    style = style + 'text-align: left;';
-
-                    var dataCell = document.createElement("TD");
-                    dataCell.innerHTML = tableArray[i][j].replace(/"/g, '');
-                    dataCell.setAttribute("style", style);
-                    row.appendChild(dataCell);
-                }
-
             }
-        }
+            break;
     }
 
-    $('#hdnHtmlCode').val($('#dvExportedData').html());
+
+    var htmlTableString = $('#dvExportedData').html();
+    var htmlTableStringCompressed = LZString.compressToUTF16(htmlTableString);
+
+    $('#hdnHtmlCode').val(htmlTableStringCompressed);
     document.getElementById('CreatePDFDocument').click();
 
 

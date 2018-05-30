@@ -18,7 +18,7 @@
             m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
     })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-    ga('create', 'UA-17252739-1', 'auto');
+    ga('create', 'UA-118127007-1', 'auto');
     ga('send', 'pageview');
 </script>
 <!-- End Google Analytics -->
@@ -44,49 +44,200 @@
 }
 
 
-
-<div class="headerBI hb22">
-    <div style="display: none">
-     @using (Html.BeginForm("ConvertHtmlCodeToPdf", "Home", FormMethod.Post))
+<style>
+    iframe {
+            width: 100% !important;
+    /*height: calc(100vh - 109px) !important;*/
+    }
+    .headerBI {
+        position: relative;
+    }
+ .action-items {
+         display: inline-block;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    margin: auto;
+    width: 242px;
+    height: 28px;
+    top: 0px;
+    bottom: 0px;
+    }
+    .logoimg {
+        width: 178px;
+        float: left;
+        margin-left: 20px;
+    }
+    .centerizer.center-w {
+        max-width: 1320px;
+    }
+</style>
+<link rel="stylesheet" href="http://www.businesstravelnews.com/css/min.css?20170525">
+<div class="headerBI" style="height:103px; padding: 10px;">
+    <div class="centerizer">
+    <img src="http://www.businesstravelnews.com/I/btn-logo.png" alt="Business Logo" title="Business Logo" class="logoimg">
+    <ul class="action-items">
+        <li>
+            <div style="display:none;">
+                @using (Html.BeginForm("ConvertHtmlCodeToPdf", "Home", FormMethod.Post))
                 {
                     <input type="hidden" id="hdnHtmlCode" name="hdnHtmlCode" />
                     <input type="submit" id="CreatePDFDocument" value="Export To PDF Hidden" />
                     <div id="dvExportedData"></div>
                 }
+            </div>
+            <button id="export_pdf" type="button" class="btn btn-primary" disabled> Export to PDF </button>
+        </li>
+        <li>
+            <button id="export_csv" type="button" class="btn btn-info" disabled> Export to CSV </button>
+        </li>
+    </ul>
     </div>
-    <style>
-        .hb22 {
-           position: fixed;
-    left: 0px;
-    top: 50%;
-    z-index: 44;
-    padding: 10px 5px;
-    background-color: #16375a;
-    width: 50px;
-        }
-        .hb22 .btnico {
-            padding: 0px;
-    margin: 6px 0px;
-    border: 0px;
-    background-color: transparent;
-    outline: none;
-        }
-        .hb22 .btnico:visited, .hb22 .btnico:hover, .hb22 .btnico:active {
-            outline: 0px;
-            border: 0px;
-        }
-        .hb22 .btnico img{
-            height: 35px;
-            width: 35px;
-        }
-    </style>
-   <button id="export_pdf" type="button" class="btnico" disabled> <img src="/Images/pdf.svg" /> </button>
-            <button id="export_csv" type="button" class="btnico" disabled> <img src="/Images/excel.svg" /> </button>
 </div>
+<div id="reportContainer" class="centerizer center-w"></div>
+<script>
+                $(document).ready(function () {
+                    resizeContent();
+                    /* */
+                 
+                    $(window).resize(function () {
+                        resizeContent();
+                    });
+                    /* */
+                });
 
-<div id="reportContainer"></div>
+                function resizeContent() {
+                    var width = $(window).width();
+                   if (width >= 320 && width <= 759) {
+                        $width = $(window).width() + 410;
+                        $('#idIframe').height($width);
+                    }
+                    else if (width >= 760 && width <= 999) {
+                        $width = $(window).width() + 760;
+                        $('#idIframe').height($width);
+                    }
+                    else if (width >= 1000 && width <= 1198) {
+                        $width = $(window).width() + 990;
+                        $('#idIframe').height($width);
+                    }
+                    else if (width >= 1200 && width <= 1339) {
+                        $width = $(window).width() + 1148;
+                        $('#idIframe').height($width);
+                    }
+                   
+                    else if (width >= 1340 && width <= 1920) {
+                       // $width = $(window).width() + 987;
+                        $('#idIframe').height("2587px");
+                    }
+                }
+            </script>
+
+<footer>
+
+        <div class="footer-top nocontent">
+
+            <div class="centerizer nocontent">
+
+                <img src="http://www.businesstravelnews.com/I/btn-logo.png" width="120" height="" alt="Business Travel News" title="Business Travel News">
+                <!--<img class="http://www.businesstravelnews.com/I/mobile-footer-logo" src="http://www.businesstravelnews.com/I/btn-logo-mobile.png" width="120" height="" alt="Business Travel News" style="">-->
+                
+                <ul class="less-info-top">
+                    <li><a href="/About-Us">About Us</a></li><li><a href="/Contact-Us">Contact Us</a></li><li><a href="/Advertise-with-Business-Travel-News">Advertise</a></li>
+                </ul>
+                <ul class="more-info-top">
+                    <li>
+                        <a href="https://twitter.com/btnonline" target="_blank"><img src="http://www.businesstravelnews.com/I/header-social-twitter.png" width="25" height="" alt="Business Travel News on Twitter"></a>
+                    </li>
+                    <li>
+                        <a href="https://www.linkedin.com/company/51111" target="_blank"><img src="http://www.businesstravelnews.com/I/header-social-linked.png" width="25" height="" alt="Business Travel News on LinkedIn"></a>
+                    </li>
+                    <li>
+                        <a href="https://www.facebook.com/businesstravelnews" target="_blank"><img src="http://www.businesstravelnews.com/I/header-social-facebook.png" width="25" height="" alt="Business Travel News on Facebook"></a>
+                    </li>
+                </ul>
+                <button class="footer-more-info">More Information</button>
+
+                <div class="btn-dropdown footer-dropdown">
+
+                    <span>BUSINESS TRAVEL NEWS</span>
+                    <select id="btn-drop">
+                        <option>- BTN -</option>
+                    <option value="/About-Us">About Us</option><option value="/Contact-Us">Contact Us</option><option value="/Advertise-With-Business-Travel-News/">Advertise</option><option value="/adupload.aspx">Upload Print Ad Material</option><option value="https://wrightsmedia.com/reprints/index.cfm?magid=3497">Purchase Reprints</option><option value="/Editorial-Guidelines">Editorial Guidelines</option><option value="http://formdesigner.ecn5.com/GetForm?tokenuid=e697989d-dab2-4ae9-b8b9-c02a08a2e10f">Subscribe to BTN</option><option value="http://formdesigner.ecn5.com/GetForm?tokenuid=f162cd5c-7f06-435f-bc50-41bedfcfdcf9">Subscribe to Travel Procurement</option><option value="/newsletters">Subscribe to Newsletters</option><option value="http://adhost1.ntmllc.com/twxads/privacy_0404.htm">Privacy Policy</option><option value="http://adhost1.ntmllc.com/twxads/T&amp;C.htm">Terms &amp; Conditions</option></select>
+
+                </div><!-- end div.btn-dropdown -->
+
+                <div class="northstar-dropdown footer-dropdown">
+
+                    <span>NORTHSTAR TRAVEL GROUP</span>
+                    <select id="ns-drop">
+                        <option>- NORTHSTAR -</option>
+                     <option value="http://www.travelweekly.com">Travel Weekly</option><option value="http://www.travelweekly-asia.com/">Travel Weekly Asia</option><option value="http://www.travelweekly-china.com/">Travel Weekly China</option><option value="http://www.travelagewest.com">TravelAge West</option><option value="http://www.travel-42.com/">travel42</option><option value="http://www.starserviceonline.com/">Star Service Online</option><option value="http://www.intelliguide.com/">Intelliguide</option><option value="http://www.meetings-conventions.com">Meetings &amp; Conventions</option><option value="http://www.meetings-conventions-china.com/">Meetings &amp; Conventions China</option><option value="http://www.meetingnews.com">Meeting News</option><option value="http://www.successfulmeetings.com/">Successful Meetings</option><option value="http://www.incentivemag.com/">Incentive</option><option value="http://www.phocuswright.com">Phocuswright</option><option value="http://www.webintravel.com/">Web In Travel</option></select>
+
+                </div><!-- end div.btn-dropdown -->
+
+            </div><!-- end div.centerizer -->
+
+        </div><!-- end div.footer-top -->
+
+        <div class="footer-expand nocontent" style="display: none;">
+
+            <div class="left-expand">
+
+                <span class="expand-top"><span><img src="http://www.businesstravelnews.com/I/btn-footer-logo.png" width="" height="28" alt="Business Travel News"></span></span>
+
+                <div class="footer-contain">
+
+                    <ul>
+                        <li><a href="/About-Us">About Us</a></li><li><a href="/Contact-Us">Contact Us</a></li><li><a href="/Advertise-With-Business-Travel-News/">Advertise</a></li><li><a href="/adupload.aspx">Upload Print Ad Material</a></li><li><a href="https://wrightsmedia.com/reprints/index.cfm?magid=3497" target="_blank">Purchase Reprints</a></li><li><a href="/Editorial-Guidelines">Editorial Guidelines</a></li><li><a href="http://formdesigner.ecn5.com/GetForm?tokenuid=e697989d-dab2-4ae9-b8b9-c02a08a2e10f" target="_blank">Subscribe to BTN</a></li><li><a href="http://formdesigner.ecn5.com/GetForm?tokenuid=f162cd5c-7f06-435f-bc50-41bedfcfdcf9" target="_blank">Subscribe to Travel Procurement</a></li><li><a href="/newsletters">Subscribe to Newsletters</a></li><li><a href="http://adhost1.ntmllc.com/twxads/privacy_0404.htm" target="_blank">Privacy Policy</a></li><li><a href="http://adhost1.ntmllc.com/twxads/T&amp;C.htm" target="_blank">Terms &amp; Conditions</a></li>
+                    </ul>
+
+                </div>
+
+                <span class="btn-group expand-top"><span><img src="http://www.businesstravelnews.com/I/btn-group-logo.png" width="" height="21" alt="Business Travel News"></span></span>
+                <div class="btn-group-logos">
+                    
+                    <a href="/Travel-Procurement"><img src="http://www.businesstravelnews.com/uploadedImages/travel-procurement-logoFooter.png" width="214" height="" alt="Travel Procurement"></a>
+                    <a href="http://www.thebeat.travel" target="_blank"><img src="http://www.businesstravelnews.com/I/the-beat-logo.png" width="131" height="" alt="The Beat"></a>
+                </div>
+
+            </div>
+
+            <div class="right-expand">
+
+                <span class="expand-top"><span><img src="http://www.businesstravelnews.com/I/northstar-footer-logo.png" width="" height="28" alt=""></span></span>
+
+                <div class="footer-contain">
+
+                    <ul class="left-list">
+                        <li><span>Retail Travel</span></li><li><a href="http://www.travelweekly.com" target="_blank">Travel Weekly</a></li><li><a href="http://www.travelweekly-asia.com/" target="_blank">Travel Weekly Asia</a></li><li><a href="http://www.travelweekly-china.com/" target="_blank">Travel Weekly China</a></li><li><a href="http://www.travelagewest.com" target="_blank">TravelAge West</a></li><li><a href="http://www.travel-42.com/" target="_blank">travel42</a></li><li><a href="http://www.starserviceonline.com/" target="_blank">Star Service Online</a></li><li><a href="http://www.intelliguide.com/" target="_blank">Intelliguide</a></li>
+                    </ul>
+
+                    <ul>
+                        <li><span>Meetings &amp; Incentives</span></li><li><a href="http://www.meetings-conventions.com" target="_blank">Meetings &amp; Conventions</a></li><li><a href="http://www.meetings-conventions-china.com/" target="_blank">Meetings &amp; Conventions China</a></li><li><a href="http://www.meetingnews.com" target="_blank">Meeting News</a></li><li><a href="http://www.successfulmeetings.com/" target="_blank">Successful Meetings</a></li><li><a href="http://www.incentivemag.com/" target="_blank">Incentive</a></li><li><br></li><li><span>Research</span></li><li><a href="http://www.phocuswright.com" target="_blank">Phocuswright</a></li><li><a href="http://www.webintravel.com/" target="_blank">Web In Travel</a></li>
+                     
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div><!-- end div.footer-expand -->
+
+        <div class="footer-bottom nocontent">
+
+            <div class="centerizer nocontent">
+
+                <a href="http://www.northstartravelgroup.com" target="_blank"><img src="http://www.businesstravelnews.com/I/northstar-logo.png" width="210" height="" alt="Northstar Travel Group"></a>
+                <span>Copyright ©2018 Northstar Travel Media, LLC. All rights reserved. &nbsp;&nbsp;&nbsp;100 Lighting Way Secaucus, NJ 07094-3626 USA | Telephone: <a href="tel:201-902-2000">(201) 902-2000</a></span>
+                <div id="jq-debug2"></div>
+            </div><!-- end div.centerizer -->
+
+        </div><!-- end div.footer-bottom -->
+
+    </footer>
 
 <script>
+   
 
     var cache_width, a4;
 
@@ -262,5 +413,5 @@
 
 </script>
 
-<script type="text/javascript" src="~/Scripts/reports/report_b4d62e59-b521-436d-9780-96555806f85c.js?v=8.5"></script>
+<script type="text/javascript" src="~/Scripts/reports/report_b4d62e59-b521-436d-9780-96555806f85c.js?v=1.0"></script>
 <script type="text/javascript" src="~/Scripts/lz-string.min.js"></script>

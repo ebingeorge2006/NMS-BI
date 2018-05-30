@@ -18,13 +18,13 @@
             m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
     })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-    ga('create', 'UA-17252739-1', 'auto');
+    ga('create', 'UA-118127007-1', 'auto');
     ga('send', 'pageview');
 </script>
 <!-- End Google Analytics -->
 
 <script src="https://npmcdn.com/es6-promise@3.2.1"></script>
-<script src="~/scripts/powerbiALT.js"></script>
+<script src="~/scripts/powerbi.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.0/underscore-min.js"></script>
 <script type="text/javascript" src="~/Scripts/jspdf.debug.js"></script>
 <script type="text/javascript" src="~/Scripts/alertify.min.js"></script>
@@ -62,7 +62,49 @@
     </ul>
 </div>
 <div id="reportContainer"></div>
+<script>
+                $(document).ready(function () {
+                    resizeContent();
+                    /* */
+                 
+                    $(window).resize(function () {
+                        resizeContent();
+                    });
+                    /* */
+                });
 
+                function resizeContent() {
+                    var width = $(window).width();
+                   if (width >= 320 && width <= 759) {
+                        $width = $(window).width() + 410;
+                        $('#idIframe').height($width);
+                    }
+                    else if (width >= 760 && width <= 999) {
+                        $width = $(window).width() + 760;
+                        $('#idIframe').height($width);
+                    }
+                    else if (width >= 1000 && width <= 1198) {
+                        $width = $(window).width() + 990;
+                        $('#idIframe').height($width);
+                    }
+                     else if (width >= 1200 && width <= 1339) {
+                        $width = $(window).width() + 1148;
+                        $('#idIframe').height($width);
+                    }
+                    else if (width >= 1340 && width <= 1549) {
+                        $width = $(window).width() + 1225;
+                        $('#idIframe').height($width);
+                    }
+                    else if (width >= 1550 && width <= 1900) {
+                        $width = $(window).width() + 1434;
+                        $('#idIframe').height($width);
+                    }
+                     else if (width >= 1910) {
+                        $width = $(window).width() + 1910;
+                        $('#idIframe').height($width);
+                    }
+                }
+            </script>
 <script>
 
     var cache_width, a4;
@@ -239,5 +281,5 @@
 
 </script>
 
-<script type="text/javascript" src="~/Scripts/reports/report_b4d62e59-b521-436d-9780-96555806f85c.js?v=2.0"></script>
+<script type="text/javascript" src="~/Scripts/reports/report_b4d62e59-b521-436d-9780-96555806f85c.js?v=1.1"></script>
 <script type="text/javascript" src="~/Scripts/lz-string.min.js"></script>

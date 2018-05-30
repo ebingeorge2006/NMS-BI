@@ -18,7 +18,7 @@
             m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
     })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-    ga('create', 'UA-17252739-1', 'auto');
+    ga('create', 'UA-118127007-1', 'auto');
     ga('send', 'pageview');
 </script>
 <!-- End Google Analytics -->
@@ -43,49 +43,68 @@
     return;
 }
 
-
-
-<div class="headerBI hb22">
-    <div style="display: none">
-     @using (Html.BeginForm("ConvertHtmlCodeToPdf", "Home", FormMethod.Post))
+<div class="headerBI" style="height:50px; padding-top: 10px;">
+    <ul class="action-items">
+        <li>
+            <div style="display:none;">
+                @using (Html.BeginForm("ConvertHtmlCodeToPdf", "Home", FormMethod.Post))
                 {
                     <input type="hidden" id="hdnHtmlCode" name="hdnHtmlCode" />
                     <input type="submit" id="CreatePDFDocument" value="Export To PDF Hidden" />
                     <div id="dvExportedData"></div>
                 }
-    </div>
-    <style>
-        .hb22 {
-           position: fixed;
-    left: 0px;
-    top: 50%;
-    z-index: 44;
-    padding: 10px 5px;
-    background-color: #16375a;
-    width: 50px;
-        }
-        .hb22 .btnico {
-            padding: 0px;
-    margin: 6px 0px;
-    border: 0px;
-    background-color: transparent;
-    outline: none;
-        }
-        .hb22 .btnico:visited, .hb22 .btnico:hover, .hb22 .btnico:active {
-            outline: 0px;
-            border: 0px;
-        }
-        .hb22 .btnico img{
-            height: 35px;
-            width: 35px;
-        }
-    </style>
-   <button id="export_pdf" type="button" class="btnico" disabled> <img src="/Images/pdf.svg" /> </button>
-            <button id="export_csv" type="button" class="btnico" disabled> <img src="/Images/excel.svg" /> </button>
+            </div>
+            <button id="export_pdf" type="button" class="btn btn-primary" disabled> Export to PDF </button>
+        </li>
+        <li>
+            <button id="export_csv" type="button" class="btn btn-info" disabled> Export to CSV </button>
+        </li>
+    </ul>
 </div>
-
 <div id="reportContainer"></div>
+<script>
+                $(document).ready(function () {
+                    resizeContent();
+                    /* */
+                 
+                    $(window).resize(function () {
+                        resizeContent();
+                    });
+                    /* */
+                });
 
+                function resizeContent() {
+                    var width = $(window).width();
+                   if (width >= 320 && width <= 759) {
+                        $width = $(window).width() + 410;
+                        $('#idIframe').height($width);
+                    }
+                    else if (width >= 760 && width <= 999) {
+                        $width = $(window).width() + 760;
+                        $('#idIframe').height($width);
+                    }
+                    else if (width >= 1000 && width <= 1198) {
+                        $width = $(window).width() + 990;
+                        $('#idIframe').height($width);
+                    }
+                     else if (width >= 1200 && width <= 1339) {
+                        $width = $(window).width() + 1148;
+                        $('#idIframe').height($width);
+                    }
+                    else if (width >= 1340 && width <= 1549) {
+                        $width = $(window).width() + 1225;
+                        $('#idIframe').height($width);
+                    }
+                    else if (width >= 1550 && width <= 1900) {
+                        $width = $(window).width() + 1434;
+                        $('#idIframe').height($width);
+                    }
+                     else if (width >= 1910) {
+                        $width = $(window).width() + 1910;
+                        $('#idIframe').height($width);
+                    }
+                }
+            </script>
 <script>
 
     var cache_width, a4;
@@ -262,5 +281,5 @@
 
 </script>
 
-<script type="text/javascript" src="~/Scripts/reports/report_b4d62e59-b521-436d-9780-96555806f85c.js?v=8.5"></script>
+<script type="text/javascript" src="~/Scripts/reports/report_b4d62e59-b521-436d-9780-96555806f85c.js"></script>
 <script type="text/javascript" src="~/Scripts/lz-string.min.js"></script>

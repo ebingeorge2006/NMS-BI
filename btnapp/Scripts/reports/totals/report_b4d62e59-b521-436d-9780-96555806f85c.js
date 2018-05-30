@@ -463,7 +463,7 @@ exportPDFPivoted = function (columns, rows, reportName, totalHeaders) {
     rows = _.filter(rows, function (num) { return num.length > 1; });
     var rowsGroup = _.groupBy(rows, function (p) { return p[0]; });
     var colGroup = _.groupBy(rows, function (c) { return c[getColumnGroupPosition(reportName, columns)]; });
-    debugger;
+
     var startHeadRow1 = {
         text: '',
         isAdded: false
@@ -486,7 +486,7 @@ exportPDFPivoted = function (columns, rows, reportName, totalHeaders) {
                 }
                 colArray1.push(key);
             });
-            //colArray1.push('Total');
+            colArray1.push('Total');
             tableArray.push(colArray1);
 
             var rowGroupArray = [];
@@ -495,7 +495,7 @@ exportPDFPivoted = function (columns, rows, reportName, totalHeaders) {
             });
 
             tempArray = [];
-            var colTitleArray = colArray1.slice(1, colArray1.length);
+            var colTitleArray = colArray1.slice(1, colArray1.length - 1);
             for (var i = 0; i < rowGroupArray.length; i++) {
                 tempArray = [];
                 tempArray.push(rowGroupArray[i][0][0]);
@@ -514,15 +514,15 @@ exportPDFPivoted = function (columns, rows, reportName, totalHeaders) {
                 }
                 var dataArray = tempArray.slice(1);
 
-                //pivotColumn = getCalulatedPivotColumn(reportName, dataArray, '');
-                //tempArray.push(pivotColumn);
+                pivotColumn = getCalulatedPivotColumn(reportName, dataArray, '');
+                tempArray.push(pivotColumn);
                 tableArray.push(tempArray);
             }
 
             tempArray = [];
-            //tempArray.push('Total');
+            tempArray.push('Total');
 
-            var colGroup1 = colArray1.slice(1, colArray1.length);
+            var colGroup1 = colArray1.slice(1, colArray1.length - 1);
             var tableDataArray = tableArray.slice(totalHeaders);
 
 
@@ -538,8 +538,8 @@ exportPDFPivoted = function (columns, rows, reportName, totalHeaders) {
                     pivotColumn = getPivotColumn(reportName, tdArray, '');
                     dataArray.push(pivotColumn);
                 }
-                //var pivotColumn = getCalulatedPivotColumn(reportName, dataArray, '');
-                //tempArray.push(pivotColumn);
+                var pivotColumn = getCalulatedPivotColumn(reportName, dataArray, '');
+                tempArray.push(pivotColumn);
             }
             tableArray.push(tempArray);
 
@@ -595,9 +595,9 @@ exportPDFPivoted = function (columns, rows, reportName, totalHeaders) {
 
 
                         var style = styleNormal;
-                        //if (i == tableArray.length - 1 || j == tableArray[i].length - 1) {
-                        //    style = style + styleHeader;
-                        //}
+                        if (i == tableArray.length - 1 || j == tableArray[i].length - 1) {
+                            style = style + styleHeader;
+                        }
 
                         if (j > 0) {
 
@@ -640,7 +640,7 @@ exportPDFPivoted = function (columns, rows, reportName, totalHeaders) {
                 }
                 colArray1.push(key);
             });
-            //colArray1.push('Total');
+            colArray1.push('Total');
 
             tableArray.push(colArray1);
 
@@ -657,7 +657,7 @@ exportPDFPivoted = function (columns, rows, reportName, totalHeaders) {
                 }
                 tempArray.push(pivotColumn);
             });
-            //tempArray.push(pivotColumn); //for totals
+            tempArray.push(pivotColumn); //for totals
 
             tableArray.push(tempArray);
 
@@ -669,7 +669,7 @@ exportPDFPivoted = function (columns, rows, reportName, totalHeaders) {
 
 
             tempArray = [];
-            var colTitleArray = colArray1.slice(1, colArray1.length);
+            var colTitleArray = colArray1.slice(1, colArray1.length - 1);
             for (var i = 0; i < rowGroupArray.length; i++) {
                 tempArray = [];
                 tempArray.push(rowGroupArray[i][0][0]);
@@ -688,15 +688,15 @@ exportPDFPivoted = function (columns, rows, reportName, totalHeaders) {
                 }
                 var dataArray = tempArray.slice(1);
 
-                //pivotColumn = getCalulatedPivotColumn(reportName, dataArray, '');
-                //tempArray.push(pivotColumn);
+                pivotColumn = getCalulatedPivotColumn(reportName, dataArray, '');
+                tempArray.push(pivotColumn);
                 tableArray.push(tempArray);
             }
 
             tempArray = [];
-            //tempArray.push('Total');
+            tempArray.push('Total');
 
-            var colGroup1 = colArray1.slice(1, colArray1.length);
+            var colGroup1 = colArray1.slice(1, colArray1.length - 1);
             var tableDataArray = tableArray.slice(2);
 
 
@@ -724,9 +724,9 @@ exportPDFPivoted = function (columns, rows, reportName, totalHeaders) {
                     }
                     dataArray.push(pivotColumn);
                 }
-                //var pivotColumn = getCalulatedPivotColumn(reportName, dataArray, '');
+                var pivotColumn = getCalulatedPivotColumn(reportName, dataArray, '');
 
-                //tempArray.push(pivotColumn);
+                tempArray.push(pivotColumn);
             }
 
             tableArray.push(tempArray);
@@ -838,9 +838,9 @@ exportPDFPivoted = function (columns, rows, reportName, totalHeaders) {
 
 
                         var style = styleNormal;
-                        //if (i == tableArray.length - 1 || j == tableArray[i].length - 1) {
-                        //    style = style + styleHeader;
-                        //}
+                        if (i == tableArray.length - 1 || j == tableArray[i].length - 1) {
+                            style = style + styleHeader;
+                        }
 
                         if (j > 0) {
 
